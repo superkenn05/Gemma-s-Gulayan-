@@ -1,0 +1,21 @@
+{
+  "name": "Gemma's Gulayan",
+  "short_name": "Gemma's",
+  "description": "Fresh Fruits & Vegetables delivered to your doorstep",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f1f8f1",
+  "theme_color": "#1b8a2e",
+  "icons": [
+    {
+      "src": "https://picsum.photos/seed/gemmas-logo/192/192",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://picsum.photos/seed/gemmas-logo/512/512",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

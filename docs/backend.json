@@ -1,0 +1,132 @@
+{
+  "entities": {
+    "UserProfile": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "UserProfile",
+      "type": "object",
+      "description": "Represents a user's profile information within the application.",
+      "properties": {
+        "id": { "type": "string" },
+        "firstName": { "type": "string" },
+        "lastName": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "phoneNumber": { "type": "string" },
+        "profileImageUrl": { "type": "string", "format": "uri" },
+        "defaultPaymentMethodId": { "type": "string" },
+        "role": { "type": "string", "enum": ["Admin", "Superadmin", "Customer"] }
+      },
+      "required": ["id", "email"]
+    },
+    "Address": {
+      "title": "Address",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "label": { "type": "string" },
+        "fullAddress": { "type": "string" },
+        "isDefault": { "type": "boolean" }
+      },
+      "required": ["userId", "fullAddress", "label"]
+    },
+    "Product": {
+      "title": "Product",
+      "type": "object",
+      "description": "Represents a farm-fresh produce item in the store.",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "pricePerUnit": { "type": "number", "description": "Price per unit of measure" },
+        "unitOfMeasure": { "type": "string", "description": "e.g., kg, bundle, pack" },
+        "rating": { "type": "number" },
+        "reviews": { "type": "number" },
+        "imageUrl": { "type": "string", "format": "uri" },
+        "categoryId": { "type": "string" },
+        "description": { "type": "string" },
+        "currentStockQuantity": { "type": "number", "description": "Current quantity available in the farm storage" },
+        "lowStockThreshold": { "type": "number", "description": "Threshold at which to flag for restocking" },
+        "nutritionalValues": {
+          "type": "object",
+          "properties": {
+            "calories": { "type": "string" },
+            "carbs": { "type": "string" },
+            "fat": { "type": "string" },
+            "protein": { "type": "string" }
+          }
+        },
+        "isPopular": { "type": "boolean" }
+      },
+      "required": ["name", "pricePerUnit", "currentStockQuantity"]
+    },
+    "Review": {
+      "title": "Review",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "userName": { "type": "string" },
+        "userPhotoUrl": { "type": "string" },
+        "rating": { "type": "number" },
+        "comment": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "rating", "comment"]
+    },
+    "StockTransaction": {
+      "title": "StockTransaction",
+      "type": "object",
+      "description": "Records changes in product stock levels.",
+      "properties": {
+        "id": { "type": "string" },
+        "productId": { "type": "string" },
+        "amount": { "type": "number" },
+        "type": { "type": "string", "enum": ["in", "out", "adjustment"] },
+        "reason": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "performedBy": { "type": "string" }
+      }
+    },
+    "StoreSettings": {
+      "title": "StoreSettings",
+      "type": "object",
+      "properties": {
+        "bannerUrl": { "type": "string", "format": "uri" },
+        "updatedAt": { "type": "string", "format": "date-time" },
+        "updatedBy": { "type": "string" }
+      }
+    }
+  },
+  "auth": {
+    "providers": ["password", "google.com"]
+  },
+  "firestore": {
+    "/userProfiles/{userId}": {
+      "schema": { "$ref": "#/backend/entities/UserProfile" },
+      "description": "Stores individual user profile information."
+    },
+    "/userProfiles/{userId}/deliveryAddresses/{addressId}": {
+      "schema": { "$ref": "#/backend/entities/Address" },
+      "description": "Stores a user's saved delivery addresses."
+    },
+    "/products/{productId}": {
+      "schema": { "$ref": "#/backend/entities/Product" },
+      "description": "Product inventory with real-time stock levels."
+    },
+    "/products/{productId}/reviews/{reviewId}": {
+      "schema": { "$ref": "#/backend/entities/Review" },
+      "description": "User reviews for a specific product."
+    },
+    "/stockTransactions/{transactionId}": {
+      "schema": { "$ref": "#/backend/entities/StockTransaction" },
+      "description": "History of stock updates for auditing."
+    },
+    "/staffUsers/{staffId}": {
+      "schema": { "type": "object", "properties": { "role": { "type": "string" } } },
+      "description": "Mapping of staff IDs to administrative roles."
+    },
+    "/storeConfig/{configId}": {
+      "schema": { "$ref": "#/backend/entities/StoreSettings" },
+      "description": "General store configuration like banner images."
+    }
+  }
+}

@@ -1,0 +1,80 @@
+mutation CreateDemoData @transaction @auth(level: USER, insecureReason: "This operation is safe to expose to all logged in users.") {
+  user1: user_insert(data: {
+    id: "550e8400-e29b-41d4-a716-446655440000",
+    displayName: "Alice Smith",
+    email: "alice.smith@example.com",
+    createdAt: "2023-01-15T10:00:00Z",
+    role: "customer",
+    photoUrl: "https://example.com/alice.jpg",
+    address: "123 Main St, Anytown",
+    phoneNumber: "555-123-4567"
+  })
+  user2: user_insert(data: {
+    id: "550e8400-e29b-41d4-a716-446655440001",
+    displayName: "Bob Johnson",
+    email: "bob.johnson@example.com",
+    createdAt: "2023-01-16T11:00:00Z",
+    role: "customer",
+    photoUrl: "https://example.com/bob.jpg",
+    address: "456 Oak Ave, Anytown",
+    phoneNumber: "555-987-6543"
+  })
+  category1: category_insert(data: {
+    id: "550e8400-e29b-41d4-a716-446655440002",
+    name: "Electronics",
+    createdAt: "2023-01-17T09:00:00Z",
+    description: "Gadgets and electronic devices",
+    imageUrl: "https://example.com/electronics.jpg"
+  })
+  category2: category_insert(data: {
+    id: "550e8400-e29b-41d4-a716-446655440003",
+    name: "Books",
+    createdAt: "2023-01-18T10:00:00Z",
+    description: "Fiction and non-fiction books",
+    imageUrl: "https://example.com/books.jpg"
+  })
+  product1: product_insert(data: {
+    id: "550e8400-e29b-41d4-a716-446655440004",
+    name: "Smartphone X",
+    price: 799.99,
+    unit: "piece",
+    createdAt: "2023-01-19T13:00:00Z",
+    description: "Latest model smartphone",
+    imageUrl: "https://example.com/smartphone.jpg",
+    categoryId: "550e8400-e29b-41d4-a716-446655440002",
+    inStock: true
+  })
+  product2: product_insert(data: {
+    id: "550e8400-e29b-41d4-a716-446655440005",
+    name: "The Great Novel",
+    price: 19.99,
+    unit: "book",
+    createdAt: "2023-01-20T14:00:00Z",
+    description: "A thrilling read",
+    imageUrl: "https://example.com/novel.jpg",
+    categoryId: "550e8400-e29b-41d4-a716-446655440003",
+    inStock: true
+  })
+  order1: order_insert(data: {
+    id: "550e8400-e29b-41d4-a716-446655440006",
+    userId: "550e8400-e29b-41d4-a716-446655440000",
+    createdAt: "2023-01-21T15:00:00Z",
+    status: "pending",
+    totalAmount: 819.98,
+    deliveryOption: "standard",
+    deliveryAddress: "123 Main St, Anytown",
+    deliveryDate: "2023-01-25"
+  })
+  orderItem1: orderItem_insert(data: {
+    orderId: "550e8400-e29b-41d4-a716-446655440006",
+    productId: "550e8400-e29b-41d4-a716-446655440004",
+    quantity: 1,
+    priceAtOrder: 799.99
+  })
+  orderItem2: orderItem_insert(data: {
+    orderId: "550e8400-e29b-41d4-a716-446655440006",
+    productId: "550e8400-e29b-41d4-a716-446655440005",
+    quantity: 1,
+    priceAtOrder: 19.99
+  })
+}
