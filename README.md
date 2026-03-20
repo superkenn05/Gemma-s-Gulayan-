@@ -1,29 +1,29 @@
 
-# 🥗 Gemma's Gulayan - Ang Inyong Farm-Fresh Partner
+# 🥗 Gemma's Gulayan - Your Farm-Fresh Partner
 
-Ang **Gemma's Gulayan** ay isang modernong e-commerce application na idinisenyo para ihatid ang pinakasariwang gulay at prutas mula sa bukid diretso sa inyong hapag-kainan. Binuo gamit ang Next.js, Firebase, at Genkit AI para sa isang mabilis at maasahang shopping experience.
+**Gemma's Gulayan** is a modern e-commerce application designed to deliver the freshest vegetables and fruits directly from the farm to your doorstep. Built with Next.js, Firebase, and Genkit AI for a fast and reliable shopping experience.
 
-## ✨ Pangunahing Features
+## ✨ Key Features
 
-- **Farm-to-Door Delivery**: Sariwang ani mula sa mga lokal na magsasaka.
-- **Real-time Inventory Control**: Siguradong "In Stock" ang bawat order.
-- **Secure Digital Payments**: Pinapatakbo ng **PayMongo** para sa ligtas na GCash, Maya, at Card transactions.
-- **PWA (Progressive Web App)**: Maaaring i-install sa iyong mobile phone na parang tunay na app—walang browser bars!
-- **Customer Feedback System**: Makabasa at makapag-iwan ng reviews para sa bawat harvest.
-- **Priority Wishlist**: I-save ang mga paborito mong gulay para sa mabilisang pag-order sa susunod.
+- **Farm-to-Door Delivery**: Fresh harvest sourced directly from local farmers.
+- **Real-time Inventory Control**: Ensuring every order is backed by actual stock levels.
+- **Secure Digital Payments**: Powered by **PayMongo** for safe GCash, Maya, and Card transactions.
+- **PWA (Progressive Web App)**: Installable on your mobile device for a native app-like experience—no browser bars!
+- **Customer Feedback System**: Read and leave reviews for every harvest.
+- **Priority Wishlist**: Save your favorite produce for quick re-ordering.
 
-## 📱 Paano i-install sa Mobile (PWA)
+## 📱 Mobile Installation (PWA)
 
-1. Buksan ang URL ng app sa **Safari (iOS)** o **Chrome (Android)**.
-2. I-tap ang **Share** button (iOS) o ang **Menu** (tatlong tuldok sa Android).
-3. Piliin ang **"Add to Home Screen"**.
-4. Lalabas na ang icon ni Gemma's Gulayan sa iyong home screen at handa na itong gamitin bilang standalone app.
+1. Open the app URL in **Safari (iOS)** or **Chrome (Android)**.
+2. Tap the **Share** button (iOS) or the **Menu** (three dots on Android).
+3. Select **"Add to Home Screen"**.
+4. The Gemma's Gulayan icon will appear on your home screen, ready to use as a standalone app.
 
 ## 🛠️ GitHub Sync & Security (Troubleshooting)
 
-Kung ikaw ay nakakaranas ng **"push declined"** o **"Google API Key alert"** sa GitHub, sundin ang mga sumusunod na hakbang sa iyong terminal:
+If you encounter a **"push declined"** or **"Google API Key alert"** on GitHub, follow these steps in your terminal to clear sensitive history and sync correctly:
 
-### 1. Paglilinis ng Git History (Para mawala ang Alerts)
+### 1. Cleaning Git History (To resolve alerts)
 ```bash
 git add .
 git commit --amend --no-edit
@@ -31,12 +31,12 @@ git push origin main --force
 ```
 
 ### 2. PayMongo Setup
-Upang gumana ang payments nang ligtas, huwag ilagay ang key sa code. I-set up ito sa Firebase Secrets:
+To ensure secure payment processing, do not hardcode keys. Set them up in Firebase Secrets:
 ```bash
 firebase functions:secrets:set PAYMONGO_SECRET_KEY
 ```
-*(I-paste ang iyong `sk_test_...` key kapag hiningi ng terminal at i-deploy gamit ang `firebase deploy --only functions`)*
+*(Paste your `sk_test_...` key when prompted and deploy using `firebase deploy --only functions`)*
 
 ---
 
-*Binuo nang may pagmamahal para sa mga lokal na magsasaka at mamimili ng Gemma's Gulayan.*
+*Built with love for local farmers and the customers of Gemma's Gulayan.*
