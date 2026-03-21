@@ -152,6 +152,17 @@ export default function CheckoutPage() {
         });
 
         const { checkoutUrl } = result.data as { checkoutUrl: string };
+        
+        // Add notification for digital payment start
+        const notifyColRef = collection(db, 'userProfiles', user.uid, 'notifications');
+        addDocumentNonBlocking(notifyColRef, {
+          title: 'Payment Initiated',
+          message: 'Redirecting you to secure payment gateway.',
+          type: 'info',
+          isRead: false,
+          createdAt: serverTimestamp(),
+        });
+
         clearCart();
         window.location.href = checkoutUrl;
         return;
@@ -188,6 +199,16 @@ export default function CheckoutPage() {
       address: selectedAddress.fullAddress
     });
 
+    // Add success notification
+    const notifyColRef = collection(db, 'userProfiles', user.uid, 'notifications');
+    addDocumentNonBlocking(notifyColRef, {
+      title: 'Order Placed!',
+      message: `Your order #${orderId} has been successfully placed. We'll harvest it soon!`,
+      type: 'success',
+      isRead: false,
+      createdAt: serverTimestamp(),
+    });
+
     setIsOrdered(true);
     clearCart();
     setTimeout(() => { router.replace('/profile/orders'); }, 3000);
@@ -210,7 +231,7 @@ export default function CheckoutPage() {
   if (!isProfileLoading && !isProfileComplete) {
     return (
       <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6">
-        <div className="w-full max-w-sm space-y-8 text-center">
+        <div className="w-full max-sm space-y-8 text-center">
           <div className="flex flex-col items-center space-y-4">
             <div className="w-20 h-20 bg-primary/10 rounded-[2rem] flex items-center justify-center rotate-3">
               <User className="w-10 h-10 text-primary -rotate-3" />
