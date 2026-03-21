@@ -4,7 +4,7 @@ import emailjs from '@emailjs/browser';
 /**
  * Service to handle Gmail notifications via EmailJS.
  * 
- * SECURITY NOTE: These keys are provided as fallbacks.
+ * SECURITY NOTE: These keys are provided as fallbacks based on your dashboard.
  * For production, set them as Environment Variables in your hosting provider
  * using the keys: NEXT_PUBLIC_EMAILJS_SERVICE_ID, NEXT_PUBLIC_EMAILJS_TEMPLATE_ID, 
  * NEXT_PUBLIC_EMAILJS_PUBLIC_KEY.
@@ -12,7 +12,7 @@ import emailjs from '@emailjs/browser';
 
 const EMAILJS_SERVICE_ID = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID || 'service_m3u0lak'; 
 const EMAILJS_TEMPLATE_ID = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID || 'template_elfn3i8'; 
-const EMAILJS_PUBLIC_KEY = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY || 'Y8iTIL9FJmruqJJrj'; 
+const EMAILJS_PUBLIC_KEY = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY || 'LgsL-WpeeQSNt7oK5'; 
 
 export interface EmailParams {
   to_name: string;
@@ -37,7 +37,6 @@ export async function sendOrderEmail(params: EmailParams) {
     }
 
     // Map parameters to match your EmailJS Template variables exactly.
-    // We ensure all values are strings and trimmed to avoid semantic errors.
     const templateParams = {
       to_name: String(params.to_name || 'Valued Customer').trim(),
       to_email: String(params.to_email).trim(),
@@ -48,12 +47,6 @@ export async function sendOrderEmail(params: EmailParams) {
       message: String(params.message || 'No additional details provided.').trim(),
     };
 
-    console.log('Attempting to send email via EmailJS...', { 
-      service: EMAILJS_SERVICE_ID, 
-      template: EMAILJS_TEMPLATE_ID,
-      recipient: templateParams.to_email
-    });
-
     // In EmailJS v4, passing the public key as the 4th argument is the most robust method.
     const result = await emailjs.send(
       EMAILJS_SERVICE_ID,
@@ -62,17 +55,10 @@ export async function sendOrderEmail(params: EmailParams) {
       EMAILJS_PUBLIC_KEY
     );
 
-    console.log('Email successfully sent!', result.status, result.text);
     return result;
   } catch (error: any) {
-    // 422 (Unprocessable Entity) usually means IDs are wrong or the template is disabled/restricted.
     console.error('EmailJS Error Status:', error?.status);
     console.error('EmailJS Error Text:', error?.text || 'No error text returned');
-    
-    if (error?.status === 422) {
-      console.error('DIAGNOSTIC: A 422 error often means the Public Key is not authorized for the Service/Template ID, or the IDs themselves have typos.');
-    }
-    
     throw error;
   }
 }
