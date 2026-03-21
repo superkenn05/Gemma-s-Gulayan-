@@ -148,19 +148,21 @@ export default function CheckoutPage() {
           createdAt: serverTimestamp(),
         });
 
-        // Send Email Notification - Await this to ensure it sends before redirect
-        try {
-          await sendOrderEmail({
-            to_name: `${profileFirstName} ${profileLastName}`,
-            to_email: user.email || '',
-            order_id: 'Digital Payment',
-            status: 'Payment Pending',
-            total_amount: `₱${(totalPrice + 5).toFixed(2)}`,
-            items_summary: itemsSummary,
-            message: 'Your payment session has been created. Please complete the transaction in the secure window.'
-          });
-        } catch (emailError) {
-          console.error('Email failed to send, but proceeding with order:', emailError);
+        // Send Email Notification - Only if email exists
+        if (user.email) {
+          try {
+            await sendOrderEmail({
+              to_name: `${profileFirstName} ${profileLastName}`,
+              to_email: user.email,
+              order_id: 'Digital Payment',
+              status: 'Payment Pending',
+              total_amount: `₱${(totalPrice + 5).toFixed(2)}`,
+              items_summary: itemsSummary,
+              message: 'Your payment session has been created. Please complete the transaction in the secure window.'
+            });
+          } catch (emailError) {
+            console.error('Email failed to send, but proceeding with order:', emailError);
+          }
         }
 
         clearCart();
@@ -209,19 +211,21 @@ export default function CheckoutPage() {
       createdAt: serverTimestamp(),
     });
 
-    // Send Confirmation Email - Await to ensure delivery attempts finish
-    try {
-      await sendOrderEmail({
-        to_name: `${profileFirstName} ${profileLastName}`,
-        to_email: user.email || '',
-        order_id: orderId,
-        status: 'Pending Harvest',
-        total_amount: `₱${(totalPrice + 5).toFixed(2)}`,
-        items_summary: itemsSummary,
-        message: 'Your order has been received and is waiting for harvest. We will notify you once it is shipped.'
-      });
-    } catch (emailError) {
-      console.error('Confirmation email failed:', emailError);
+    // Send Confirmation Email - Only if email exists
+    if (user.email) {
+      try {
+        await sendOrderEmail({
+          to_name: `${profileFirstName} ${profileLastName}`,
+          to_email: user.email,
+          order_id: orderId,
+          status: 'Pending Harvest',
+          total_amount: `₱${(totalPrice + 5).toFixed(2)}`,
+          items_summary: itemsSummary,
+          message: 'Your order has been received and is waiting for harvest. We will notify you once it is shipped.'
+        });
+      } catch (emailError) {
+        console.error('Confirmation email failed:', emailError);
+      }
     }
 
     setIsOrdered(true);

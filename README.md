@@ -11,6 +11,18 @@
 - **PWA (Progressive Web App)**: Installable on your mobile device for a native app-like experience—no browser bars, just your fresh market!
 - **Customer Feedback System**: A transparent review system where customers can share their experiences and rate the harvest.
 - **Priority Wishlist**: Save your must-have produce for quick access and re-ordering.
+- **Email Notifications**: Get instant order confirmations and status updates directly in your Gmail.
+
+## 🔒 Security Setup (EmailJS)
+
+To fully secure your EmailJS keys and prevent GitHub from blocking your pushes, you should set up environment variables in your deployment platform (e.g., Firebase App Hosting):
+
+1. Go to your project settings in your hosting dashboard.
+2. Add the following environment variables:
+   - `NEXT_PUBLIC_EMAILJS_SERVICE_ID`: your service_id
+   - `NEXT_PUBLIC_EMAILJS_TEMPLATE_ID`: your template_id
+   - `NEXT_PUBLIC_EMAILJS_PUBLIC_KEY`: your public_key
+3. Re-deploy your application.
 
 ## 📱 Mobile Installation (PWA)
 

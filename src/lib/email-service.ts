@@ -3,9 +3,10 @@ import emailjs from '@emailjs/browser';
 /**
  * Service to handle Gmail notifications via EmailJS.
  * 
- * SECURITY NOTE: These are public-facing keys, but GitHub scanners often flag them.
- * To fully secure these, set them as Environment Variables in your hosting provider
- * (e.g., Firebase App Hosting or Vercel) using the keys:
+ * SECURITY NOTE: These keys are currently provided as fallbacks.
+ * To fully secure these and prevent GitHub from blocking your pushes,
+ * set them as Environment Variables in your hosting provider
+ * (e.g., Firebase App Hosting) using the keys:
  * NEXT_PUBLIC_EMAILJS_SERVICE_ID, NEXT_PUBLIC_EMAILJS_TEMPLATE_ID, NEXT_PUBLIC_EMAILJS_PUBLIC_KEY
  */
 
@@ -30,8 +31,16 @@ export interface EmailParams {
  */
 export async function sendOrderEmail(params: EmailParams) {
   try {
-    if (!EMAILJS_PUBLIC_KEY || EMAILJS_PUBLIC_KEY === 'your_public_key') {
-      console.warn('EmailJS not configured. Please set your environment variables.');
+    if (!EMAILJS_PUBLIC_KEY || EMAILJS_PUBLIC_KEY === 'LgsL-WpeeQSNt7oK5') {
+      // Logic for developers to know if they need to set keys
+      if (EMAILJS_PUBLIC_KEY === 'your_public_key') {
+        console.warn('EmailJS not configured. Please set your environment variables.');
+        return null;
+      }
+    }
+
+    if (!params.to_email) {
+      console.warn('Skipping email: No recipient email address provided.');
       return null;
     }
 
@@ -49,8 +58,11 @@ export async function sendOrderEmail(params: EmailParams) {
 
     console.log('Email sent successfully:', result.status, result.text);
     return result;
-  } catch (error) {
-    console.error('EmailJS Error:', error);
+  } catch (error: any) {
+    // Improved error logging to capture the actual response from EmailJS
+    console.error('EmailJS Error Status:', error?.status);
+    console.error('EmailJS Error Text:', error?.text || 'Unknown error');
+    
     // We throw the error so callers can handle it if needed
     throw error;
   }
