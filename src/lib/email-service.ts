@@ -31,31 +31,36 @@ export interface EmailParams {
 export async function sendOrderEmail(params: EmailParams) {
   try {
     // Basic validation
-    if (!params.to_email) {
-      console.warn('Skipping email: No recipient email address provided.');
+    if (!params.to_email || !params.to_email.includes('@')) {
+      console.warn('Skipping email: Invalid or missing recipient email address.');
       return null;
     }
 
-    // Ensure EmailJS is initialized with the Public Key
-    // This is critical to prevent 401/403/422 errors
+    // Initialize EmailJS with the Public Key
     emailjs.init(EMAILJS_PUBLIC_KEY);
 
+    // Map parameters to match your EmailJS Template variables exactly.
+    // Ensure all values are strings to prevent 422 errors.
     const templateParams = {
-      to_name: params.to_name || 'Valued Customer',
-      to_email: params.to_email,
-      order_id: params.order_id,
-      status: params.status,
-      total_amount: params.total_amount,
-      items_summary: params.items_summary,
-      message: params.message || 'No additional details provided.',
-      reply_to: 'support@gemmasgulayan.com',
+      to_name: String(params.to_name || 'Valued Customer').trim(),
+      to_email: String(params.to_email).trim(),
+      order_id: String(params.order_id).trim(),
+      status: String(params.status).trim(),
+      total_amount: String(params.total_amount).trim(),
+      items_summary: String(params.items_summary).trim(),
+      message: String(params.message || 'No additional details provided.').trim(),
     };
+
+    console.log('Attempting to send email via EmailJS...', { 
+      serviceId: EMAILJS_SERVICE_ID, 
+      templateId: EMAILJS_TEMPLATE_ID 
+    });
 
     const result = await emailjs.send(
       EMAILJS_SERVICE_ID,
       EMAILJS_TEMPLATE_ID,
       templateParams,
-      EMAILJS_PUBLIC_KEY // Passing it here as well for redundancy
+      EMAILJS_PUBLIC_KEY
     );
 
     console.log('Email successfully sent!', result.status, result.text);
@@ -65,7 +70,11 @@ export async function sendOrderEmail(params: EmailParams) {
     console.error('EmailJS Error Status:', error?.status);
     console.error('EmailJS Error Text:', error?.text || 'Unknown EmailJS error');
     
-    // We throw the error so callers can handle it if needed
+    // Detailed logging for debugging
+    if (error?.status === 422) {
+      console.error('Fix Suggestion: Double-check that "service_m3u0lak" and "template_elfn3i8" exist and are active in your EmailJS dashboard for the Public Key "LgsL-WpeeQSNt7oK5".');
+    }
+    
     throw error;
   }
 }
