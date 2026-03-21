@@ -66,15 +66,22 @@ export default function AdminOrdersPage() {
       const profile = userDoc.docs[0]?.data() as UserProfile;
 
       if (profile?.email) {
-        // Send Status Update Email via Gmail (EmailJS)
+        // Map data to match the screenshot template structure
         await sendOrderEmail({
-          to_name: `${profile.firstName} ${profile.lastName}`,
-          to_email: profile.email,
-          order_id: order.id,
-          status: newStatus.toUpperCase(),
-          total_amount: `₱${order.total.toFixed(2)}`,
-          items_summary: order.items.map(i => i.name).join(', '),
-          message: `Your farm-fresh harvest status has been updated to ${newStatus}. Thank you for your patience!`
+          email: profile.email,
+          order_id: order.id.toUpperCase(),
+          orders: order.items.map(i => ({
+            name: i.name,
+            price: `₱${(Number(i.pricePerUnit) || 0).toFixed(2)}`,
+            units: `${i.quantity} units`
+          })),
+          cost: {
+            shipping: '0.00',
+            tax: '0.00',
+            total: order.total.toFixed(2)
+          },
+          // Keep additional context for status update
+          message: `Your harvest status: ${newStatus.toUpperCase()}.`
         });
       }
     } catch (e) {

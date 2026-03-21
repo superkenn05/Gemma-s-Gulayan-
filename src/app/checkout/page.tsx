@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useRouter } from 'next/navigation';
@@ -118,7 +119,18 @@ export default function CheckoutPage() {
   const handleOrder = async () => {
     if (!selectedAddress || !user || !db || !isProfileComplete) return;
 
-    const itemsSummary = cart.map(item => `${item.name} (x${item.quantity})`).join(', ');
+    // Prepare EmailJS Data Structure matching the screenshot
+    const orders = cart.map(item => ({
+      name: item.name,
+      price: `₱${(Number(item.pricePerUnit) || 0).toFixed(2)}`,
+      units: `${item.quantity} ${item.unitOfMeasure}`
+    }));
+
+    const costData = {
+      shipping: '0.00', // Mock data
+      tax: '0.00', // Mock data
+      total: `${(totalPrice + 5).toFixed(2)}`
+    };
 
     if (selectedPayment.type === 'digital') {
       setIsProcessing(true);
@@ -138,30 +150,17 @@ export default function CheckoutPage() {
 
         const { checkoutUrl } = result.data as { checkoutUrl: string };
         
-        // Add notification for digital payment start
-        const notifyColRef = collection(db, 'userProfiles', user.uid, 'notifications');
-        addDocumentNonBlocking(notifyColRef, {
-          title: 'Payment Initiated',
-          message: 'Redirecting you to secure payment gateway.',
-          type: 'info',
-          isRead: false,
-          createdAt: serverTimestamp(),
-        });
-
-        // Send Email Notification - Only if email exists
+        // Notify and Send Email before redirecting
         if (user.email) {
           try {
             await sendOrderEmail({
-              to_name: `${profileFirstName} ${profileLastName}`,
-              to_email: user.email,
-              order_id: 'Digital Payment',
-              status: 'Payment Pending',
-              total_amount: `₱${(totalPrice + 5).toFixed(2)}`,
-              items_summary: itemsSummary,
-              message: 'Your payment session has been created. Please complete the transaction in the secure window.'
+              email: user.email,
+              order_id: 'ONLINE-PAYMENT',
+              orders: orders,
+              cost: costData
             });
-          } catch (emailError) {
-            console.error('Email failed to send, but proceeding with order:', emailError);
+          } catch (e) {
+            console.error('Email failed but proceeding:', e);
           }
         }
 
@@ -170,7 +169,6 @@ export default function CheckoutPage() {
         return;
       } catch (error: any) {
         setIsProcessing(false);
-        console.error("Payment failed:", error);
         toast({
           variant: "destructive",
           title: "Payment Error",
@@ -201,27 +199,14 @@ export default function CheckoutPage() {
       address: selectedAddress.fullAddress
     });
 
-    // Add success notification
-    const notifyColRef = collection(db, 'userProfiles', user.uid, 'notifications');
-    addDocumentNonBlocking(notifyColRef, {
-      title: 'Order Placed!',
-      message: `Your order #${orderId} has been successfully placed. We'll harvest it soon!`,
-      type: 'success',
-      isRead: false,
-      createdAt: serverTimestamp(),
-    });
-
-    // Send Confirmation Email - Only if email exists
+    // Send Confirmation Email
     if (user.email) {
       try {
         await sendOrderEmail({
-          to_name: `${profileFirstName} ${profileLastName}`,
-          to_email: user.email,
+          email: user.email,
           order_id: orderId,
-          status: 'Pending Harvest',
-          total_amount: `₱${(totalPrice + 5).toFixed(2)}`,
-          items_summary: itemsSummary,
-          message: 'Your order has been received and is waiting for harvest. We will notify you once it is shipped.'
+          orders: orders,
+          cost: costData
         });
       } catch (emailError) {
         console.error('Confirmation email failed:', emailError);
