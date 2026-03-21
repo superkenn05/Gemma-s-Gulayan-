@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useRouter } from 'next/navigation';
@@ -149,16 +148,20 @@ export default function CheckoutPage() {
           createdAt: serverTimestamp(),
         });
 
-        // Send Email Notification
-        sendOrderEmail({
-          to_name: `${profileFirstName} ${profileLastName}`,
-          to_email: user.email || '',
-          order_id: 'Digital Payment',
-          status: 'Payment Pending',
-          total_amount: `₱${(totalPrice + 5).toFixed(2)}`,
-          items_summary: itemsSummary,
-          message: 'Your payment session has been created. Please complete the transaction in the next window.'
-        }).catch(e => console.error('Email failed', e));
+        // Send Email Notification - Await this to ensure it sends before redirect
+        try {
+          await sendOrderEmail({
+            to_name: `${profileFirstName} ${profileLastName}`,
+            to_email: user.email || '',
+            order_id: 'Digital Payment',
+            status: 'Payment Pending',
+            total_amount: `₱${(totalPrice + 5).toFixed(2)}`,
+            items_summary: itemsSummary,
+            message: 'Your payment session has been created. Please complete the transaction in the secure window.'
+          });
+        } catch (emailError) {
+          console.error('Email failed to send, but proceeding with order:', emailError);
+        }
 
         clearCart();
         window.location.href = checkoutUrl;
@@ -206,16 +209,20 @@ export default function CheckoutPage() {
       createdAt: serverTimestamp(),
     });
 
-    // Send Confirmation Email
-    sendOrderEmail({
-      to_name: `${profileFirstName} ${profileLastName}`,
-      to_email: user.email || '',
-      order_id: orderId,
-      status: 'Pending Harvest',
-      total_amount: `₱${(totalPrice + 5).toFixed(2)}`,
-      items_summary: itemsSummary,
-      message: 'Your order has been received and is waiting for harvest. We will notify you once it is shipped.'
-    }).catch(e => console.error('Email failed', e));
+    // Send Confirmation Email - Await to ensure delivery attempts finish
+    try {
+      await sendOrderEmail({
+        to_name: `${profileFirstName} ${profileLastName}`,
+        to_email: user.email || '',
+        order_id: orderId,
+        status: 'Pending Harvest',
+        total_amount: `₱${(totalPrice + 5).toFixed(2)}`,
+        items_summary: itemsSummary,
+        message: 'Your order has been received and is waiting for harvest. We will notify you once it is shipped.'
+      });
+    } catch (emailError) {
+      console.error('Confirmation email failed:', emailError);
+    }
 
     setIsOrdered(true);
     clearCart();
@@ -249,29 +256,29 @@ export default function CheckoutPage() {
           <div className="bg-white rounded-3xl p-6 shadow-sm border space-y-4 text-left">
             <div className="space-y-2">
               <Label className="font-bold">First Name</Label>
-              <input 
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
+              <Input 
                 placeholder="Juan" 
                 value={profileFirstName} 
                 onChange={(e) => setProfileFirstName(e.target.value)} 
+                className="h-12 rounded-xl"
               />
             </div>
             <div className="space-y-2">
               <Label className="font-bold">Last Name</Label>
-              <input 
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
+              <Input 
                 placeholder="Dela Cruz" 
                 value={profileLastName} 
                 onChange={(e) => setProfileLastName(e.target.value)} 
+                className="h-12 rounded-xl"
               />
             </div>
             <div className="space-y-2">
               <Label className="font-bold">Phone Number</Label>
-              <input 
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
+              <Input 
                 placeholder="0917 XXX XXXX" 
                 value={profilePhoneNumber} 
                 onChange={(e) => setProfilePhoneNumber(e.target.value)} 
+                className="h-12 rounded-xl"
               />
             </div>
             <Button className="w-full h-14 rounded-2xl font-bold" onClick={handleSaveProfile} disabled={isSavingProfile}>
