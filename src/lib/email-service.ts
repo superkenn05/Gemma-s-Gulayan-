@@ -70,7 +70,6 @@ export async function sendOrderEmail(params: EmailParams) {
     console.error('EmailJS Error Status:', error?.status);
     console.error('EmailJS Error Text:', error?.text || 'Unknown EmailJS error');
     
-    // Detailed logging for debugging
     if (error?.status === 422) {
       console.error('Fix Suggestion: Double-check that your Service ID, Template ID, and Public Key match exactly in your EmailJS dashboard.');
     }
