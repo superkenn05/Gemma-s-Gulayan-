@@ -14,11 +14,8 @@ const EMAILJS_SERVICE_ID = 'service_m3u0lak';
 const EMAILJS_TEMPLATE_ID = 'template_kt9xc39'; 
 const EMAILJS_PUBLIC_KEY = 'Y8iTIL9FJmruqJJrj'; 
 
-// Initialize EmailJS globally.
-emailjs.init(EMAILJS_PUBLIC_KEY);
-
 export interface EmailParams {
-  email: string; // Recipient for reply-to
+  email: string; // The recipient's email
   customer_name: string; // {{customer_name}}
   order_id: string; // {{order_id}}
   order_date: string; // {{order_date}}
@@ -32,8 +29,9 @@ export interface EmailParams {
  */
 export async function sendOrderEmail(params: EmailParams) {
   try {
+    // Prevent sending if the email is invalid
     if (!params.email || !params.email.includes('@')) {
-      console.warn('Skipping email: Invalid or missing recipient email address.');
+      console.warn('Skipping email: Invalid recipient address.');
       return null;
     }
 
@@ -46,17 +44,22 @@ export async function sendOrderEmail(params: EmailParams) {
       order_items: params.order_items,
     };
 
-    console.log('Sending email with params:', JSON.stringify(templateParams, null, 2));
-
+    /**
+     * IMPORTANT: In EmailJS v4, the 4th argument MUST be an options object
+     * containing the publicKey. Passing it as a string (v3 style) causes 422 errors.
+     */
     const result = await emailjs.send(
       EMAILJS_SERVICE_ID,
       EMAILJS_TEMPLATE_ID,
-      templateParams
+      templateParams,
+      {
+        publicKey: EMAILJS_PUBLIC_KEY,
+      }
     );
 
-    console.log('Email sent successfully:', result.status, result.text);
     return result;
   } catch (error: any) {
+    // Log detailed error information to help with dashboard configuration
     console.error('EmailJS Error Status:', error?.status);
     console.error('EmailJS Error Text:', error?.text || 'Unknown EmailJS error');
     throw error;
