@@ -74,8 +74,14 @@ export default function AdminOrdersPage() {
           order_date: order.createdAt?.seconds 
             ? new Date(order.createdAt.seconds * 1000).toLocaleDateString() 
             : new Date().toLocaleDateString(),
-          total_amount: `₱${order.total.toFixed(2)}`,
-          order_items: order.items.map(i => `${i.name} x${i.quantity}`).join(', ')
+          items: order.items.map(i => ({
+            name: i.name,
+            units: i.quantity,
+            price: Number(i.pricePerUnit) || 0
+          })),
+          shipping: 5.00,
+          tax: 0.00,
+          total: Number(order.total) || 0
         });
       }
     } catch (e) {

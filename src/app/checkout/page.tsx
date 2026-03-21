@@ -124,8 +124,14 @@ export default function CheckoutPage() {
       email: user.email || '',
       customer_name: `${profileFirstName} ${profileLastName}`.trim(),
       order_date: new Date().toLocaleDateString(),
-      total_amount: `₱${(totalPrice + 5).toFixed(2)}`,
-      order_items: cart.map(i => `${i.name} x${i.quantity}`).join(', ')
+      items: cart.map(item => ({
+        name: item.name,
+        units: item.quantity,
+        price: Number(item.pricePerUnit) || 0
+      })),
+      shipping: 5.00, // Matching the "Service Fee" in UI
+      tax: 0.00,
+      total: totalPrice + 5.00
     };
 
     if (selectedPayment.type === 'digital') {
