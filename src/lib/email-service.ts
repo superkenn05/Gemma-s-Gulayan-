@@ -12,7 +12,7 @@ import emailjs from '@emailjs/browser';
 
 const EMAILJS_SERVICE_ID = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID || 'service_m3u0lak'; 
 const EMAILJS_TEMPLATE_ID = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID || 'template_elfn3i8'; 
-const EMAILJS_PUBLIC_KEY = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY || 'LgsL-WpeeQSNt7oK5'; 
+const EMAILJS_PUBLIC_KEY = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY || 'qY8iTIL9FJmruqJJrj'; 
 
 export interface EmailParams {
   to_name: string;
@@ -72,7 +72,7 @@ export async function sendOrderEmail(params: EmailParams) {
     
     // Detailed logging for debugging
     if (error?.status === 422) {
-      console.error('Fix Suggestion: Double-check that "service_m3u0lak" and "template_elfn3i8" exist and are active in your EmailJS dashboard for the Public Key "LgsL-WpeeQSNt7oK5".');
+      console.error('Fix Suggestion: Double-check that your Service ID, Template ID, and Public Key match exactly in your EmailJS dashboard.');
     }
     
     throw error;
