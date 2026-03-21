@@ -2,7 +2,7 @@
 "use client";
 
 import { useRouter } from 'next/navigation';
-import { ChevronLeft, CreditCard, Plus, Trash2, Wallet, Smartphone, Check, Loader2 } from 'lucide-react';
+import { ChevronLeft, CreditCard, Wallet, Smartphone, Check, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useUser, useFirestore, useDoc, useMemoFirebase, setDocumentNonBlocking } from '@/firebase';
@@ -95,14 +95,10 @@ export default function PaymentsPage() {
                     <p className="text-sm text-muted-foreground font-medium">{method.description}</p>
                   </div>
                 </div>
-                {selectedDefaultId === method.id ? (
+                {selectedDefaultId === method.id && (
                   <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
                     <Check className="w-4 h-4 text-primary" />
                   </div>
-                ) : (
-                  <Button variant="ghost" size="icon" className="text-muted-foreground opacity-20" disabled title="Delete">
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
                 )}
               </div>
             ))}
