@@ -10,7 +10,7 @@ import { useAuth, useUser, useFirestore, useDoc, useMemoFirebase } from '@/fireb
 import { useEffect, useMemo } from 'react';
 import { doc } from 'firebase/firestore';
 import { UserProfile } from '@/types';
-import { cn } from '@/utils';
+import { cn } from '@/lib/utils';
 
 export default function ProfilePage() {
   const router = useRouter();

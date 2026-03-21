@@ -27,7 +27,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { UserAddress, UserProfile } from '@/types';
-import { cn } from '@/utils';
+import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { sendOrderEmail } from '@/lib/email-service';
 
@@ -249,15 +249,30 @@ export default function CheckoutPage() {
           <div className="bg-white rounded-3xl p-6 shadow-sm border space-y-4 text-left">
             <div className="space-y-2">
               <Label className="font-bold">First Name</Label>
-              <Input placeholder="Juan" value={profileFirstName} onChange={(e) => setProfileFirstName(e.target.value)} />
+              <input 
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
+                placeholder="Juan" 
+                value={profileFirstName} 
+                onChange={(e) => setProfileFirstName(e.target.value)} 
+              />
             </div>
             <div className="space-y-2">
               <Label className="font-bold">Last Name</Label>
-              <Input placeholder="Dela Cruz" value={profileLastName} onChange={(e) => setProfileLastName(e.target.value)} />
+              <input 
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
+                placeholder="Dela Cruz" 
+                value={profileLastName} 
+                onChange={(e) => setProfileLastName(e.target.value)} 
+              />
             </div>
             <div className="space-y-2">
               <Label className="font-bold">Phone Number</Label>
-              <Input placeholder="0917 XXX XXXX" value={profilePhoneNumber} onChange={(e) => setProfilePhoneNumber(e.target.value)} />
+              <input 
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
+                placeholder="0917 XXX XXXX" 
+                value={profilePhoneNumber} 
+                onChange={(e) => setProfilePhoneNumber(e.target.value)} 
+              />
             </div>
             <Button className="w-full h-14 rounded-2xl font-bold" onClick={handleSaveProfile} disabled={isSavingProfile}>
               {isSavingProfile ? <Loader2 className="animate-spin" /> : 'Continue to Order'}

@@ -12,11 +12,11 @@ import {
   updateDocumentNonBlocking,
   addDocumentNonBlocking 
 } from '@/firebase';
-import { collectionGroup, query, orderBy, doc, collection, where, getDocs } from 'firebase/firestore';
+import { collectionGroup, query, orderBy, doc, collection, where, getDocs, serverTimestamp } from 'firebase/firestore';
 import { Order, UserProfile } from '@/types';
 import { useState, useMemo } from 'react';
 import { Badge } from '@/components/ui/badge';
-import { cn } from '@/utils';
+import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { sendOrderEmail } from '@/lib/email-service';
 
