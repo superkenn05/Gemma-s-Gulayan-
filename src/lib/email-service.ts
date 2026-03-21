@@ -4,7 +4,7 @@ import emailjs from '@emailjs/browser';
 /**
  * Service to handle Gmail notifications via EmailJS.
  * 
- * SECURITY NOTE: These keys are provided as fallbacks based on your dashboard.
+ * SECURITY NOTE: These keys are provided as fallbacks.
  * For production, set them as Environment Variables in your hosting provider
  * using the keys: NEXT_PUBLIC_EMAILJS_SERVICE_ID, NEXT_PUBLIC_EMAILJS_TEMPLATE_ID, 
  * NEXT_PUBLIC_EMAILJS_PUBLIC_KEY.
@@ -12,7 +12,7 @@ import emailjs from '@emailjs/browser';
 
 const EMAILJS_SERVICE_ID = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID || 'service_m3u0lak'; 
 const EMAILJS_TEMPLATE_ID = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID || 'template_elfn3i8'; 
-const EMAILJS_PUBLIC_KEY = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY || 'LgsL-WpeeQSNt7oK5'; 
+const EMAILJS_PUBLIC_KEY = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY || 'Y8iTIL9FJmruqJJrj'; 
 
 export interface EmailParams {
   to_name: string;
@@ -47,6 +47,9 @@ export async function sendOrderEmail(params: EmailParams) {
       message: String(params.message || 'No additional details provided.').trim(),
     };
 
+    // Diagnostic log (useful for debugging 422 errors)
+    console.log('Attempting to send email with Service:', EMAILJS_SERVICE_ID, 'Template:', EMAILJS_TEMPLATE_ID);
+
     // In EmailJS v4, passing the public key as the 4th argument is the most robust method.
     const result = await emailjs.send(
       EMAILJS_SERVICE_ID,
@@ -55,10 +58,17 @@ export async function sendOrderEmail(params: EmailParams) {
       EMAILJS_PUBLIC_KEY
     );
 
+    console.log('Email sent successfully:', result.status, result.text);
     return result;
   } catch (error: any) {
+    // 422 often means the Service ID or Template ID is incorrect, or the Public Key isn't recognized
     console.error('EmailJS Error Status:', error?.status);
-    console.error('EmailJS Error Text:', error?.text || 'No error text returned');
+    console.error('EmailJS Error Text:', error?.text || 'Unknown EmailJS error');
+    
+    if (error?.status === 422) {
+      console.error('DIAGNOSTIC: A 422 error usually means your Service ID, Template ID, or Public Key in EmailJS does not match the code.');
+    }
+    
     throw error;
   }
 }
