@@ -108,11 +108,6 @@ export default function PaymentsPage() {
             ))}
           </div>
         )}
-
-        <Button variant="outline" className="w-full h-14 rounded-2xl border-dashed border-2 hover:bg-muted/50 font-bold text-primary border-primary/20 mt-4">
-          <Plus className="w-5 h-5 mr-2" />
-          Add New Payment Method
-        </Button>
       </main>
     </div>
   );
