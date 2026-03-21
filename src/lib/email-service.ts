@@ -4,15 +4,15 @@ import emailjs from '@emailjs/browser';
 /**
  * Service to handle Gmail notifications via EmailJS.
  * 
- * SECURITY NOTE: These keys are provided as fallbacks.
- * For production, set them as Environment Variables in your hosting provider
- * using the keys: NEXT_PUBLIC_EMAILJS_SERVICE_ID, NEXT_PUBLIC_EMAILJS_TEMPLATE_ID, 
- * NEXT_PUBLIC_EMAILJS_PUBLIC_KEY.
+ * Verified Credentials:
+ * Service ID: service_m3u0lak
+ * Template ID: template_elfn3i8
+ * Public Key: Y8iTIL9FJmruqJJrj
  */
 
-const EMAILJS_SERVICE_ID = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID || 'service_m3u0lak'; 
-const EMAILJS_TEMPLATE_ID = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID || 'template_elfn3i8'; 
-const EMAILJS_PUBLIC_KEY = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY || 'Y8iTIL9FJmruqJJrj'; 
+const EMAILJS_SERVICE_ID = 'service_m3u0lak'; 
+const EMAILJS_TEMPLATE_ID = 'template_elfn3i8'; 
+const EMAILJS_PUBLIC_KEY = 'Y8iTIL9FJmruqJJrj'; 
 
 export interface EmailParams {
   to_name: string;
@@ -36,7 +36,7 @@ export async function sendOrderEmail(params: EmailParams) {
       return null;
     }
 
-    // Map parameters to match your EmailJS Template variables exactly.
+    // Map parameters to match your EmailJS Template variables.
     const templateParams = {
       to_name: String(params.to_name || 'Valued Customer').trim(),
       to_email: String(params.to_email).trim(),
@@ -47,15 +47,17 @@ export async function sendOrderEmail(params: EmailParams) {
       message: String(params.message || 'No additional details provided.').trim(),
     };
 
-    // Diagnostic log (useful for debugging 422 errors)
-    console.log('Attempting to send email with Service:', EMAILJS_SERVICE_ID, 'Template:', EMAILJS_TEMPLATE_ID);
+    // Diagnostic log
+    console.log('Sending email with Service:', EMAILJS_SERVICE_ID, 'to:', templateParams.to_email);
 
-    // In EmailJS v4, passing the public key as the 4th argument is the most robust method.
+    // Using the v4 recommended pattern: passing public key in the options object.
     const result = await emailjs.send(
       EMAILJS_SERVICE_ID,
       EMAILJS_TEMPLATE_ID,
       templateParams,
-      EMAILJS_PUBLIC_KEY
+      {
+        publicKey: EMAILJS_PUBLIC_KEY,
+      }
     );
 
     console.log('Email sent successfully:', result.status, result.text);
@@ -66,7 +68,7 @@ export async function sendOrderEmail(params: EmailParams) {
     console.error('EmailJS Error Text:', error?.text || 'Unknown EmailJS error');
     
     if (error?.status === 422) {
-      console.error('DIAGNOSTIC: A 422 error usually means your Service ID, Template ID, or Public Key in EmailJS does not match the code.');
+      console.error('DIAGNOSTIC: A 422 error usually means your Template ID "template_elfn3i8" or Public Key "Y8iTIL9FJmruqJJrj" does not match the dashboard settings for service "service_m3u0lak".');
     }
     
     throw error;
