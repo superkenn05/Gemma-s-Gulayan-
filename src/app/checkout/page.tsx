@@ -27,13 +27,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { UserAddress, UserProfile } from '@/types';
-import { cn } from '@/lib/utils';
+import { cn } from '@/utils';
 import { useToast } from '@/hooks/use-toast';
-
-interface PSGCItem {
-  code: string;
-  name: string;
-}
+import { sendOrderEmail } from '@/lib/email-service';
 
 const PAYMENT_METHODS = [
   { id: 'cod', label: 'Cash on Delivery', description: 'Pay at your doorstep', icon: CreditCard, type: 'manual' },
@@ -61,8 +57,6 @@ export default function CheckoutPage() {
   const [profilePhoneNumber, setProfilePhoneNumber] = useState('');
   const [isSavingProfile, setIsSavingProfile] = useState(false);
 
-  const [regions, setRegions] = useState<PSGCItem[]>([]);
-
   useEffect(() => {
     if (!isOrdered && !isProcessing && cart.length === 0) {
       router.replace('/');
@@ -86,16 +80,6 @@ export default function CheckoutPage() {
       }
     }
   }, [profile]);
-
-  useEffect(() => {
-    fetch('https://psgc.gitlab.io/api/regions/')
-      .then(res => res.ok ? res.json() : [])
-      .then(data => setRegions(data))
-      .catch(err => {
-        console.error("Error fetching regions:", err);
-        setRegions([]);
-      });
-  }, []);
 
   const addressesQuery = useMemoFirebase(() => {
     if (!db || !user) return null;
@@ -135,6 +119,8 @@ export default function CheckoutPage() {
   const handleOrder = async () => {
     if (!selectedAddress || !user || !db || !isProfileComplete) return;
 
+    const itemsSummary = cart.map(item => `${item.name} (x${item.quantity})`).join(', ');
+
     if (selectedPayment.type === 'digital') {
       setIsProcessing(true);
       try {
@@ -162,6 +148,17 @@ export default function CheckoutPage() {
           isRead: false,
           createdAt: serverTimestamp(),
         });
+
+        // Send Email Notification
+        sendOrderEmail({
+          to_name: `${profileFirstName} ${profileLastName}`,
+          to_email: user.email || '',
+          order_id: 'Digital Payment',
+          status: 'Payment Pending',
+          total_amount: `₱${(totalPrice + 5).toFixed(2)}`,
+          items_summary: itemsSummary,
+          message: 'Your payment session has been created. Please complete the transaction in the next window.'
+        }).catch(e => console.error('Email failed', e));
 
         clearCart();
         window.location.href = checkoutUrl;
@@ -208,6 +205,17 @@ export default function CheckoutPage() {
       isRead: false,
       createdAt: serverTimestamp(),
     });
+
+    // Send Confirmation Email
+    sendOrderEmail({
+      to_name: `${profileFirstName} ${profileLastName}`,
+      to_email: user.email || '',
+      order_id: orderId,
+      status: 'Pending Harvest',
+      total_amount: `₱${(totalPrice + 5).toFixed(2)}`,
+      items_summary: itemsSummary,
+      message: 'Your order has been received and is waiting for harvest. We will notify you once it is shipped.'
+    }).catch(e => console.error('Email failed', e));
 
     setIsOrdered(true);
     clearCart();

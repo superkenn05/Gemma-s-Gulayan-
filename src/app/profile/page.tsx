@@ -3,14 +3,14 @@
 
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { ChevronRight, Settings, ShoppingBag, MapPin, CreditCard, LogOut, Star, PackageSearch, MessageSquare, Loader2 } from 'lucide-react';
+import { ChevronRight, Settings, ShoppingBag, MapPin, CreditCard, LogOut, Star, PackageSearch, MessageSquare, Loader2, ClipboardList } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { BottomNav } from '@/components/layout/bottom-nav';
 import { useAuth, useUser, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import { useEffect, useMemo } from 'react';
 import { doc } from 'firebase/firestore';
 import { UserProfile } from '@/types';
-import { cn } from '@/lib/utils';
+import { cn } from '@/utils';
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -80,7 +80,7 @@ export default function ProfilePage() {
 
       <main className="px-6 -mt-10 space-y-6 relative z-10">
         {isAdmin && (
-          <section className="bg-accent rounded-3xl p-2 shadow-lg border-2 border-white">
+          <section className="bg-accent rounded-3xl p-2 shadow-lg border-2 border-white space-y-2">
             <button 
               onClick={() => router.push('/admin/inventory')}
               className="w-full flex items-center justify-between p-4 bg-white rounded-2xl active:bg-muted/50 transition-colors"
@@ -90,6 +90,16 @@ export default function ProfilePage() {
                 <span className="font-bold text-base">Inventory Console</span>
               </div>
               <ChevronRight className="w-5 h-5 text-accent" />
+            </button>
+            <button 
+              onClick={() => router.push('/admin/orders')}
+              className="w-full flex items-center justify-between p-4 bg-white rounded-2xl active:bg-muted/50 transition-colors"
+            >
+              <div className="flex items-center space-x-4">
+                <div className="bg-blue-500/10 p-2.5 rounded-2xl text-blue-600"><ClipboardList className="w-5 h-5" /></div>
+                <span className="font-bold text-base">Order Management</span>
+              </div>
+              <ChevronRight className="w-5 h-5 text-blue-600" />
             </button>
           </section>
         )}
