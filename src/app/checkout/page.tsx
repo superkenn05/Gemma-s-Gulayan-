@@ -118,7 +118,6 @@ export default function CheckoutPage() {
   const handleOrder = async () => {
     if (!selectedAddress || !user || !db || !isProfileComplete) return;
 
-    // Mapping to the email parameters expected by the email service
     const baseEmailParams = {
       email: user.email || '',
       customer_name: `${profileFirstName} ${profileLastName}`.trim(),
@@ -151,11 +150,11 @@ export default function CheckoutPage() {
 
         const { checkoutUrl } = result.data as { checkoutUrl: string };
         
-        // Notify via email for digital payment
+        // Notify via email for digital payment (Status: Pending initiation)
         try {
           await sendOrderEmail({
             ...baseEmailParams,
-            order_id: 'DIGITAL-PREAUTH',
+            order_id: 'DIGITAL-AUTH',
           });
         } catch (e) {
           console.error('Email notification failed but proceeding to payment:', e);
@@ -179,6 +178,7 @@ export default function CheckoutPage() {
     const orderId = Math.random().toString(36).substring(2, 9).toUpperCase();
     const orderColRef = collection(db, 'userProfiles', user.uid, 'orders');
     
+    // Save to Firestore with status 'pending'
     addDocumentNonBlocking(orderColRef, {
       id: orderId,
       userId: user.uid,
@@ -196,7 +196,7 @@ export default function CheckoutPage() {
       address: selectedAddress.fullAddress
     });
 
-    // Send Confirmation Email for COD
+    // Send Confirmation Email for Pending/COD Order
     try {
       await sendOrderEmail({
         ...baseEmailParams,
