@@ -36,11 +36,8 @@ export async function sendOrderEmail(params: EmailParams) {
       return null;
     }
 
-    // Initialize EmailJS with the Public Key
-    emailjs.init(EMAILJS_PUBLIC_KEY);
-
     // Map parameters to match your EmailJS Template variables exactly.
-    // Ensure all values are strings to prevent 422 errors.
+    // We ensure all values are strings and trimmed to avoid semantic errors.
     const templateParams = {
       to_name: String(params.to_name || 'Valued Customer').trim(),
       to_email: String(params.to_email).trim(),
@@ -52,10 +49,12 @@ export async function sendOrderEmail(params: EmailParams) {
     };
 
     console.log('Attempting to send email via EmailJS...', { 
-      serviceId: EMAILJS_SERVICE_ID, 
-      templateId: EMAILJS_TEMPLATE_ID 
+      service: EMAILJS_SERVICE_ID, 
+      template: EMAILJS_TEMPLATE_ID,
+      recipient: templateParams.to_email
     });
 
+    // In EmailJS v4, passing the public key as the 4th argument is the most robust method.
     const result = await emailjs.send(
       EMAILJS_SERVICE_ID,
       EMAILJS_TEMPLATE_ID,
@@ -66,12 +65,12 @@ export async function sendOrderEmail(params: EmailParams) {
     console.log('Email successfully sent!', result.status, result.text);
     return result;
   } catch (error: any) {
-    // 422 often means the Service ID or Template ID is incorrect, or the Public Key isn't recognized
+    // 422 (Unprocessable Entity) usually means IDs are wrong or the template is disabled/restricted.
     console.error('EmailJS Error Status:', error?.status);
-    console.error('EmailJS Error Text:', error?.text || 'Unknown EmailJS error');
+    console.error('EmailJS Error Text:', error?.text || 'No error text returned');
     
     if (error?.status === 422) {
-      console.error('Fix Suggestion: Double-check that your Service ID, Template ID, and Public Key match exactly in your EmailJS dashboard.');
+      console.error('DIAGNOSTIC: A 422 error often means the Public Key is not authorized for the Service/Template ID, or the IDs themselves have typos.');
     }
     
     throw error;
