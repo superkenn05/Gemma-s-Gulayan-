@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useRouter } from 'next/navigation';
@@ -119,8 +118,8 @@ export default function CheckoutPage() {
   const handleOrder = async () => {
     if (!selectedAddress || !user || !db || !isProfileComplete) return;
 
-    // Common email mapping for both manual and digital payments
-    const emailData = {
+    // Mapping to the email parameters expected by the email service
+    const baseEmailParams = {
       email: user.email || '',
       customer_name: `${profileFirstName} ${profileLastName}`.trim(),
       order_date: new Date().toLocaleDateString(),
@@ -129,7 +128,7 @@ export default function CheckoutPage() {
         units: item.quantity,
         price: Number(item.pricePerUnit) || 0
       })),
-      shipping: 5.00, // Matching the "Service Fee" in UI
+      shipping: 5.00,
       tax: 0.00,
       total: totalPrice + 5.00
     };
@@ -152,16 +151,14 @@ export default function CheckoutPage() {
 
         const { checkoutUrl } = result.data as { checkoutUrl: string };
         
-        // Notify and Send Email before redirecting
-        if (user.email) {
-          try {
-            await sendOrderEmail({
-              ...emailData,
-              order_id: 'ONLINE-PAYMENT',
-            });
-          } catch (e) {
-            console.error('Email failed but proceeding:', e);
-          }
+        // Notify via email for digital payment
+        try {
+          await sendOrderEmail({
+            ...baseEmailParams,
+            order_id: 'DIGITAL-PREAUTH',
+          });
+        } catch (e) {
+          console.error('Email notification failed but proceeding to payment:', e);
         }
 
         clearCart();
@@ -199,16 +196,14 @@ export default function CheckoutPage() {
       address: selectedAddress.fullAddress
     });
 
-    // Send Confirmation Email
-    if (user.email) {
-      try {
-        await sendOrderEmail({
-          ...emailData,
-          order_id: orderId,
-        });
-      } catch (emailError) {
-        console.error('Confirmation email failed:', emailError);
-      }
+    // Send Confirmation Email for COD
+    try {
+      await sendOrderEmail({
+        ...baseEmailParams,
+        order_id: orderId,
+      });
+    } catch (emailError) {
+      console.error('Confirmation email failed:', emailError);
     }
 
     setIsOrdered(true);
