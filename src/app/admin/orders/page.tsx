@@ -65,23 +65,17 @@ export default function AdminOrdersPage() {
       const userDoc = await getDocs(query(collection(db, 'userProfiles'), where('id', '==', order.userId)));
       const profile = userDoc.docs[0]?.data() as UserProfile;
 
-      if (profile?.email) {
-        // Map data to match the screenshot template structure
+      if (profile?.email && newStatus === 'delivered') {
+        // Send email only when order is marked as delivered
         await sendOrderEmail({
           email: profile.email,
+          customer_name: `${profile.firstName || 'Valued'} ${profile.lastName || 'Customer'}`.trim(),
           order_id: order.id.toUpperCase(),
-          orders: order.items.map(i => ({
-            name: i.name,
-            price: `₱${(Number(i.pricePerUnit) || 0).toFixed(2)}`,
-            units: `${i.quantity} units`
-          })),
-          cost: {
-            shipping: '0.00',
-            tax: '0.00',
-            total: order.total.toFixed(2)
-          },
-          // Keep additional context for status update
-          message: `Your harvest status: ${newStatus.toUpperCase()}.`
+          order_date: order.createdAt?.seconds 
+            ? new Date(order.createdAt.seconds * 1000).toLocaleDateString() 
+            : new Date().toLocaleDateString(),
+          total_amount: `₱${order.total.toFixed(2)}`,
+          order_items: order.items.map(i => `${i.name} x${i.quantity}`).join(', ')
         });
       }
     } catch (e) {

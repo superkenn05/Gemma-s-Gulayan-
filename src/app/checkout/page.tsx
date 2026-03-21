@@ -119,17 +119,13 @@ export default function CheckoutPage() {
   const handleOrder = async () => {
     if (!selectedAddress || !user || !db || !isProfileComplete) return;
 
-    // Prepare EmailJS Data Structure matching the screenshot
-    const orders = cart.map(item => ({
-      name: item.name,
-      price: `₱${(Number(item.pricePerUnit) || 0).toFixed(2)}`,
-      units: `${item.quantity} ${item.unitOfMeasure}`
-    }));
-
-    const costData = {
-      shipping: '0.00', // Mock data
-      tax: '0.00', // Mock data
-      total: `${(totalPrice + 5).toFixed(2)}`
+    // Common email mapping for both manual and digital payments
+    const emailData = {
+      email: user.email || '',
+      customer_name: `${profileFirstName} ${profileLastName}`.trim(),
+      order_date: new Date().toLocaleDateString(),
+      total_amount: `₱${(totalPrice + 5).toFixed(2)}`,
+      order_items: cart.map(i => `${i.name} x${i.quantity}`).join(', ')
     };
 
     if (selectedPayment.type === 'digital') {
@@ -154,10 +150,8 @@ export default function CheckoutPage() {
         if (user.email) {
           try {
             await sendOrderEmail({
-              email: user.email,
+              ...emailData,
               order_id: 'ONLINE-PAYMENT',
-              orders: orders,
-              cost: costData
             });
           } catch (e) {
             console.error('Email failed but proceeding:', e);
@@ -203,10 +197,8 @@ export default function CheckoutPage() {
     if (user.email) {
       try {
         await sendOrderEmail({
-          email: user.email,
+          ...emailData,
           order_id: orderId,
-          orders: orders,
-          cost: costData
         });
       } catch (emailError) {
         console.error('Confirmation email failed:', emailError);
@@ -354,33 +346,35 @@ export default function CheckoutPage() {
         </Button>
       </div>
 
-      <Dialog open={isAddressDialogOpen} onOpenChange={setIsAddressDialogOpen}>
-        <DialogContent className="rounded-3xl p-6">
-          <DialogHeader><DialogTitle>Select Address</DialogTitle></DialogHeader>
-          <div className="space-y-3 py-4 max-h-[60vh] overflow-y-auto pr-1">
-            {addresses?.map(addr => (
-              <div key={addr.id} onClick={() => { setSelectedAddressId(addr.id); setIsAddressDialogOpen(false); }} className={cn("p-4 rounded-2xl border-2 cursor-pointer transition-all", selectedAddressId === addr.id ? "border-primary bg-primary/5" : "border-border")}>
-                <p className="font-bold text-sm">{addr.label}</p>
-                <p className="text-xs text-muted-foreground">{addr.fullAddress}</p>
-              </div>
-            ))}
-          </div>
-        </DialogContent>
-      </Dialog>
+      <div className="hidden">
+        <Dialog open={isAddressDialogOpen} onOpenChange={setIsAddressDialogOpen}>
+          <DialogContent className="rounded-3xl p-6">
+            <DialogHeader><DialogTitle>Select Address</DialogTitle></DialogHeader>
+            <div className="space-y-3 py-4 max-h-[60vh] overflow-y-auto pr-1">
+              {addresses?.map(addr => (
+                <div key={addr.id} onClick={() => { setSelectedAddressId(addr.id); setIsAddressDialogOpen(false); }} className={cn("p-4 rounded-2xl border-2 cursor-pointer transition-all", selectedAddressId === addr.id ? "border-primary bg-primary/5" : "border-border")}>
+                  <p className="font-bold text-sm">{addr.label}</p>
+                  <p className="text-xs text-muted-foreground">{addr.fullAddress}</p>
+                </div>
+              ))}
+            </div>
+          </DialogContent>
+        </Dialog>
 
-      <Dialog open={isPaymentDialogOpen} onOpenChange={setIsPaymentDialogOpen}>
-        <DialogContent className="rounded-3xl p-6">
-          <DialogHeader><DialogTitle>Payment Method</DialogTitle></DialogHeader>
-          <div className="space-y-3 py-4">
-            {PAYMENT_METHODS.map(method => (
-              <div key={method.id} onClick={() => { setSelectedPaymentId(method.id); setIsPaymentDialogOpen(false); }} className={cn("p-4 rounded-2xl border-2 cursor-pointer transition-all", selectedPaymentId === method.id ? "border-primary bg-primary/5" : "border-border")}>
-                <p className="font-bold text-sm">{method.label}</p>
-                <p className="text-xs text-muted-foreground">{method.description}</p>
-              </div>
-            ))}
-          </div>
-        </DialogContent>
-      </Dialog>
+        <Dialog open={isPaymentDialogOpen} onOpenChange={setIsPaymentDialogOpen}>
+          <DialogContent className="rounded-3xl p-6">
+            <DialogHeader><DialogTitle>Payment Method</DialogTitle></DialogHeader>
+            <div className="space-y-3 py-4">
+              {PAYMENT_METHODS.map(method => (
+                <div key={method.id} onClick={() => { setSelectedPaymentId(method.id); setIsPaymentDialogOpen(false); }} className={cn("p-4 rounded-2xl border-2 cursor-pointer transition-all", selectedPaymentId === method.id ? "border-primary bg-primary/5" : "border-border")}>
+                  <p className="font-bold text-sm">{method.label}</p>
+                  <p className="text-xs text-muted-foreground">{method.description}</p>
+                </div>
+              ))}
+            </div>
+          </DialogContent>
+        </Dialog>
+      </div>
     </div>
   );
 }

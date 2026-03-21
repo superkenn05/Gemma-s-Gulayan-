@@ -4,34 +4,26 @@ import emailjs from '@emailjs/browser';
 /**
  * Service to handle Gmail notifications via EmailJS.
  * 
- * Verified Credentials from User Dashboard:
+ * Verified Credentials:
  * Service ID: service_m3u0lak
- * Template ID: template_elfn3i8
+ * Template ID: template_kt9xc39
  * Public Key: Y8iTIL9FJmruqJJrj
  */
 
 const EMAILJS_SERVICE_ID = 'service_m3u0lak'; 
-const EMAILJS_TEMPLATE_ID = 'template_elfn3i8'; 
+const EMAILJS_TEMPLATE_ID = 'template_kt9xc39'; 
 const EMAILJS_PUBLIC_KEY = 'Y8iTIL9FJmruqJJrj'; 
 
-// Initialize EmailJS globally once at the module level.
+// Initialize EmailJS globally.
 emailjs.init(EMAILJS_PUBLIC_KEY);
 
-export interface EmailOrderItem {
-  name: string;
-  price: string;
-  units: string;
-}
-
 export interface EmailParams {
-  email: string; // The recipient email (matches {{email}} in template)
-  order_id: string; // Matches {{order_id}} in template
-  orders: EmailOrderItem[]; // Matches {{#orders}} loop in template
-  cost: {
-    shipping: string;
-    tax: string;
-    total: string;
-  };
+  email: string; // Recipient for reply-to
+  customer_name: string; // {{customer_name}}
+  order_id: string; // {{order_id}}
+  order_date: string; // {{order_date}}
+  total_amount: string; // {{total_amount}}
+  order_items: string; // {{order_items}}
   [key: string]: any;
 }
 
@@ -40,18 +32,18 @@ export interface EmailParams {
  */
 export async function sendOrderEmail(params: EmailParams) {
   try {
-    // Basic validation
     if (!params.email || !params.email.includes('@')) {
       console.warn('Skipping email: Invalid or missing recipient email address.');
       return null;
     }
 
-    // Mapping to match the template screenshot exactly
     const templateParams = {
       email: params.email,
+      customer_name: params.customer_name,
       order_id: params.order_id,
-      orders: params.orders,
-      cost: params.cost,
+      order_date: params.order_date,
+      total_amount: params.total_amount,
+      order_items: params.order_items,
     };
 
     console.log('Sending email with params:', JSON.stringify(templateParams, null, 2));
@@ -67,11 +59,6 @@ export async function sendOrderEmail(params: EmailParams) {
   } catch (error: any) {
     console.error('EmailJS Error Status:', error?.status);
     console.error('EmailJS Error Text:', error?.text || 'Unknown EmailJS error');
-    
-    if (error?.status === 422) {
-      console.error('DIAGNOSTIC: Error 422 means the request was rejected. Verify Service ID and Template ID match Public Key.');
-    }
-    
     throw error;
   }
 }
