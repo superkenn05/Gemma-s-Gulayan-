@@ -2,14 +2,16 @@ import emailjs from '@emailjs/browser';
 
 /**
  * Service to handle Gmail notifications via EmailJS.
- * You will need to set up an account at https://www.emailjs.com/
- * and get your Service ID, Template ID, and Public Key.
+ * 
+ * SECURITY NOTE: These are public-facing keys, but GitHub scanners often flag them.
+ * To fully secure these, set them as Environment Variables in your hosting provider
+ * (e.g., Firebase App Hosting or Vercel) using the keys:
+ * NEXT_PUBLIC_EMAILJS_SERVICE_ID, NEXT_PUBLIC_EMAILJS_TEMPLATE_ID, NEXT_PUBLIC_EMAILJS_PUBLIC_KEY
  */
 
-// Replace these with your actual EmailJS credentials
-const EMAILJS_SERVICE_ID = 'service_default'; 
-const EMAILJS_TEMPLATE_ID = 'template_order_update'; 
-const EMAILJS_PUBLIC_KEY = 'your_public_key'; 
+const EMAILJS_SERVICE_ID = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID || 'service_m3u0lak'; 
+const EMAILJS_TEMPLATE_ID = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID || 'template_elfn3i8'; 
+const EMAILJS_PUBLIC_KEY = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY || 'LgsL-WpeeQSNt7oK5'; 
 
 export interface EmailParams {
   to_name: string;
@@ -24,12 +26,12 @@ export interface EmailParams {
 
 /**
  * Sends an order notification email using EmailJS.
- * Ensure the EmailJS public key is provided for the request to succeed.
+ * Awaited in checkout to ensure delivery attempts finish before navigation.
  */
 export async function sendOrderEmail(params: EmailParams) {
   try {
-    if (EMAILJS_PUBLIC_KEY === 'your_public_key' || !EMAILJS_PUBLIC_KEY) {
-      console.warn('EmailJS not configured. Please set your Public Key in src/lib/email-service.ts');
+    if (!EMAILJS_PUBLIC_KEY || EMAILJS_PUBLIC_KEY === 'your_public_key') {
+      console.warn('EmailJS not configured. Please set your environment variables.');
       return null;
     }
 
