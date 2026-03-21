@@ -118,9 +118,13 @@ export default function CheckoutPage() {
   const handleOrder = async () => {
     if (!selectedAddress || !user || !db || !isProfileComplete) return;
 
-    const baseEmailParams = {
+    setIsProcessing(true);
+    const orderId = Math.random().toString(36).substring(2, 9).toUpperCase();
+
+    const emailParams = {
       email: user.email || '',
       customer_name: `${profileFirstName} ${profileLastName}`.trim(),
+      order_id: orderId,
       order_date: new Date().toLocaleDateString(),
       items: cart.map(item => ({
         name: item.name,
@@ -133,7 +137,6 @@ export default function CheckoutPage() {
     };
 
     if (selectedPayment.type === 'digital') {
-      setIsProcessing(true);
       try {
         const createPaymongoSession = httpsCallable(functions, 'createCheckoutSession');
         const result = await createPaymongoSession({
@@ -150,14 +153,11 @@ export default function CheckoutPage() {
 
         const { checkoutUrl } = result.data as { checkoutUrl: string };
         
-        // Notify via email for digital payment (Status: Pending initiation)
+        // Notify via email for pending digital order
         try {
-          await sendOrderEmail({
-            ...baseEmailParams,
-            order_id: 'DIGITAL-AUTH',
-          });
+          await sendOrderEmail(emailParams);
         } catch (e) {
-          console.error('Email notification failed but proceeding to payment:', e);
+          console.error('Email notification failed:', e);
         }
 
         clearCart();
@@ -174,8 +174,6 @@ export default function CheckoutPage() {
       }
     }
     
-    setIsProcessing(true);
-    const orderId = Math.random().toString(36).substring(2, 9).toUpperCase();
     const orderColRef = collection(db, 'userProfiles', user.uid, 'orders');
     
     // Save to Firestore with status 'pending'
@@ -196,17 +194,15 @@ export default function CheckoutPage() {
       address: selectedAddress.fullAddress
     });
 
-    // Send Confirmation Email for Pending/COD Order
+    // Send Confirmation Email for Pending Order
     try {
-      await sendOrderEmail({
-        ...baseEmailParams,
-        order_id: orderId,
-      });
+      await sendOrderEmail(emailParams);
     } catch (emailError) {
       console.error('Confirmation email failed:', emailError);
     }
 
     setIsOrdered(true);
+    setIsProcessing(false);
     clearCart();
     setTimeout(() => { router.replace('/profile/orders'); }, 3000);
   };
