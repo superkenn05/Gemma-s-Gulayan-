@@ -6,12 +6,12 @@ import emailjs from '@emailjs/browser';
  * 
  * Verified Credentials:
  * Service ID: service_m3u0lak
- * Template ID: template_kt9xc39
+ * Template ID: template_nec49hc
  * Public Key: Y8iTIL9FJmruqJJrj
  */
 
 const EMAILJS_SERVICE_ID = 'service_m3u0lak'; 
-const EMAILJS_TEMPLATE_ID = 'template_kt9xc39'; 
+const EMAILJS_TEMPLATE_ID = 'template_nec49hc'; 
 const EMAILJS_PUBLIC_KEY = 'Y8iTIL9FJmruqJJrj'; 
 
 export interface EmailParams {
@@ -42,6 +42,10 @@ export async function sendOrderEmail(params: EmailParams) {
       order_date: params.order_date,
       total_amount: params.total_amount,
       order_items: params.order_items,
+      // For templates using the specific loops or objects from previous versions
+      orders: params.order_items.split(', ').map(item => ({ name: item })),
+      to_email: params.email,
+      to_name: params.customer_name,
     };
 
     /**
@@ -59,9 +63,14 @@ export async function sendOrderEmail(params: EmailParams) {
 
     return result;
   } catch (error: any) {
-    // Log detailed error information to help with dashboard configuration
+    // Log detailed error information for debugging
     console.error('EmailJS Error Status:', error?.status);
     console.error('EmailJS Error Text:', error?.text || 'Unknown EmailJS error');
+    
+    if (error?.status === 422) {
+      console.error('DIAGNOSTIC: 422 Error usually means the Template ID, Service ID, or Public Key is incorrect in EmailJS.');
+    }
+    
     throw error;
   }
 }
