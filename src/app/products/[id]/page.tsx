@@ -15,6 +15,7 @@ export const dynamic = 'force-static';
  * The key 'id' must match the dynamic segment folder name '[id]' exactly.
  */
 export async function generateStaticParams() {
+  // Ensure we are returning the IDs from our mock data as strings
   return PRODUCTS.map((product) => ({
     id: String(product.id),
   }));
@@ -24,11 +25,13 @@ export async function generateStaticParams() {
  * Product Details Page (Server Component)
  * In Next.js 15, the 'params' prop is a Promise that must be awaited before accessing its properties.
  */
-export default async function Page(props: { 
+export default async function Page({ 
+  params 
+}: { 
   params: Promise<{ id: string }> 
 }) {
-  const params = await props.params;
-  const id = params.id;
+  const resolvedParams = await params;
+  const id = resolvedParams.id;
   
   return <ProductDetailsClient id={id} />;
 }
