@@ -7,12 +7,10 @@ import { PRODUCTS } from '@/lib/mock-data';
  * rather than attempting dynamic server-side rendering, which is unsupported in static exports.
  */
 export const dynamicParams = false;
-export const dynamic = 'force-static';
 
 /**
  * generateStaticParams maps our product IDs to the [id] dynamic segment.
- * In Next.js 15 with static export, this function must return an array of objects
- * where each object contains the parameters for the dynamic segments.
+ * Next.js uses this at build time to pre-render all static paths.
  */
 export async function generateStaticParams() {
   return PRODUCTS.map((product) => ({
@@ -20,15 +18,15 @@ export async function generateStaticParams() {
   }));
 }
 
-export default async function ProductPage(props: {
+/**
+ * The Product Page component. 
+ * In Next.js 15, 'params' is a Promise that must be awaited.
+ */
+export default async function Page(props: {
   params: Promise<{ id: string }>;
 }) {
-  /**
-   * In Next.js 15, params is a Promise that must be awaited in Server Components.
-   * This ensures the component remains compatible with the latest rendering patterns.
-   */
-  const resolvedParams = await props.params;
-  const id = resolvedParams.id;
+  const params = await props.params;
+  const { id } = params;
   
   return <ProductDetailsClient id={id} />;
 }
