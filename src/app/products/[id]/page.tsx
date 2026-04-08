@@ -1,20 +1,19 @@
 import { redirect } from 'next/navigation';
-import { STATIC_PRODUCT_IDS, ROUTES } from '@/lib/static-paths';
+import { ROUTES, STATIC_PRODUCT_IDS } from '@/lib/static-paths';
 
 /**
  * Next.js 15 Static Export Configuration
  * 
  * In 'output: export' mode, dynamic segments [id] MUST have generateStaticParams.
- * We provide the IDs from our mock data to satisfy the build system.
- * dynamicParams = false ensures only the IDs returned by generateStaticParams are valid at build time.
+ * We provide explicit IDs to satisfy the build system's validation.
  */
 export const dynamic = 'force-static';
 export const dynamicParams = false;
 
 export async function generateStaticParams() {
-  // Return an array of objects where each object contains the dynamic parameter 'id'
+  // We explicitly map the IDs to satisfy the required param structure
   return STATIC_PRODUCT_IDS.map((id) => ({
-    id: id.toString(),
+    id: id,
   }));
 }
 
@@ -24,12 +23,12 @@ interface PageProps {
 
 /**
  * Redirector Page
- * Redirects legacy dynamic segments to the stable query-parameter based details page.
- * This satisfies the build requirement while keeping the app flexible for new Firestore products.
+ * 
+ * This page exists to handle legacy [id] links and satisfy the folder structure.
+ * It redirects everything to the stable query-parameter based details page.
  */
-export default async function ProductRedirectPage(props: PageProps) {
-  const params = await props.params;
-  const id = params.id;
+export default async function Page({ params }: PageProps) {
+  const { id } = await params;
   
   // Permanent redirect to the query-param based route
   redirect(ROUTES.productDetails(id));
