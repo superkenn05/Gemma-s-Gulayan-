@@ -6,9 +6,11 @@ import { redirect } from 'next/navigation';
  */
 export const dynamicParams = false;
 
+/**
+ * generateStaticParams is required for dynamic routes when using output: 'export'.
+ * We provide a set of IDs from our mock data to satisfy the build process.
+ */
 export function generateStaticParams() {
-  // We provide the default mock IDs as strings to satisfy the "output: export" requirement.
-  // The keys in these objects MUST match the dynamic segment name [id].
   return [
     { id: '1' },
     { id: '2' },
@@ -27,8 +29,8 @@ export default async function ProductRedirectPage({ params }: PageProps) {
   const resolvedParams = await params;
   const id = resolvedParams.id;
   
-  // Client-side redirect to the query-parameter based details page.
-  // This allows the app to handle dynamic IDs from Firestore without needing
-  // to know them all at build time.
+  // Server-side redirect to the query-parameter based details page.
+  // This allows the app to handle any ID (including new ones from Firestore)
+  // because the destination page (/products/details) is a static route.
   redirect(`/products/details?id=${id}`);
 }

@@ -1,4 +1,3 @@
-
 "use client";
 
 import Image from 'next/image';
@@ -38,7 +37,8 @@ export function ProductCard({ product }: ProductCardProps) {
   const safePrice = Number(product.pricePerUnit) || 0;
   const displayPrice = safePrice.toFixed(2);
   
-  // We use query parameters to support dynamic IDs in a static export environment
+  // Use query parameters for details to support static export (output: 'export')
+  // This bypasses the need for generateStaticParams to know every Firestore ID at build time.
   const detailsUrl = `/products/details?id=${product.id}`;
 
   return (
