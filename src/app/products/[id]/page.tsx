@@ -2,37 +2,35 @@ import { ProductDetailsClient } from '@/components/products/product-details-clie
 import { PRODUCTS } from '@/lib/mock-data';
 
 /**
- * Static Export Configuration for Next.js 15
+ * Next.js 15 Static Export Configuration
  * 
- * In a static export (output: 'export'), all dynamic routes must be 
- * strictly defined at build time. We use dynamicParams = false to 
- * ensure any unknown ID results in a 404, and 'force-static' to 
- * guarantee the page is pre-rendered.
+ * When using 'output: export', dynamic routes must be strictly defined at build time.
+ * We use dynamicParams = false to prevent fallback rendering, and force-static
+ * to ensure the page is included in the static build.
  */
 export const dynamicParams = false;
 export const dynamic = 'force-static';
+export const revalidate = false;
 
 /**
- * generateStaticParams provides the list of all valid IDs to the build engine.
- * The key 'id' must match the folder name [id] exactly.
+ * generateStaticParams maps all possible [id] values from our mock data
+ * to static paths. The key must match the dynamic segment name exactly.
  */
 export async function generateStaticParams() {
   return PRODUCTS.map((product) => ({
-    id: product.id,
+    id: product.id.toString(),
   }));
 }
 
 /**
- * The Product Page component.
+ * Product Details Page (Server Component)
  * In Next.js 15, 'params' is a Promise that must be awaited.
  */
-export default async function Page({
-  params,
-}: {
+export default async function Page(props: {
   params: Promise<{ id: string }>;
 }) {
-  const resolvedParams = await params;
-  const id = resolvedParams.id;
+  const params = await props.params;
+  const id = params.id;
   
   return <ProductDetailsClient id={id} />;
 }
