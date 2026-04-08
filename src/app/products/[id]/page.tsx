@@ -1,10 +1,11 @@
+
 import { PRODUCTS } from '@/lib/mock-data';
 import { redirect } from 'next/navigation';
 
 /**
- * This route is kept only to prevent build errors with static export.
- * Navigation has been shifted to /products/details?id=... to support
- * dynamic Firestore IDs without pre-rendering overhead.
+ * This route is kept only to satisfy the build process.
+ * All actual navigation has been moved to /products/details?id=...
+ * which supports dynamic Firestore IDs in a static export.
  */
 export const dynamicParams = false;
 
@@ -18,6 +19,6 @@ export default async function Page(props: { params: Promise<{ id: string }> }) {
   const params = await props.params;
   const id = params.id;
   
-  // Redirect to the new query-parameter based details page
+  // Redirect to the query-parameter based details page
   redirect(`/products/details?id=${id}`);
 }

@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useRouter } from 'next/navigation';
@@ -66,7 +67,14 @@ export default function MyReviewsPage() {
                     </span>
                   </div>
                 </div>
-                <Button variant="ghost" size="sm" className="text-primary text-[10px] font-black h-8" onClick={() => router.push(`/products/${review.productId}`)}>View</Button>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="text-primary text-[10px] font-black h-8" 
+                  onClick={() => router.push(`/products/details?id=${review.productId}`)}
+                >
+                  View
+                </Button>
               </div>
 
               <div className="space-y-2">
