@@ -1,24 +1,27 @@
 
-import { PRODUCTS } from '@/lib/mock-data';
 import { redirect } from 'next/navigation';
 
 /**
- * This route is kept only to satisfy the build process.
- * All actual navigation has been moved to /products/details?id=...
- * which supports dynamic Firestore IDs in a static export.
+ * This route satisfies the Next.js 15 static export requirement for dynamic segments.
+ * All actual product details logic has been moved to /products/details?id=...
  */
 export const dynamicParams = false;
 
 export function generateStaticParams() {
-  return PRODUCTS.map((product) => ({
-    id: product.id.toString(),
-  }));
+  // We provide the default mock IDs to satisfy the "output: export" requirement.
+  // This allows the build to pass even if the project contains this dynamic folder.
+  return [
+    { id: '1' },
+    { id: '2' },
+    { id: '3' },
+    { id: '4' },
+    { id: '5' }
+  ];
 }
 
-export default async function Page(props: { params: Promise<{ id: string }> }) {
-  const params = await props.params;
-  const id = params.id;
+export default async function ProductRedirectPage(props: { params: Promise<{ id: string }> }) {
+  const { id } = await props.params;
   
-  // Redirect to the query-parameter based details page
+  // Client-side redirect to the query-parameter based details page
   redirect(`/products/details?id=${id}`);
 }

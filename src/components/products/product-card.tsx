@@ -1,3 +1,4 @@
+
 "use client";
 
 import Image from 'next/image';
@@ -37,7 +38,7 @@ export function ProductCard({ product }: ProductCardProps) {
   const safePrice = Number(product.pricePerUnit) || 0;
   const displayPrice = safePrice.toFixed(2);
   
-  // Use query parameter routing for better static export compatibility
+  // We use query parameters to support dynamic IDs in a static export environment
   const detailsUrl = `/products/details?id=${product.id}`;
 
   return (
@@ -60,7 +61,6 @@ export function ProductCard({ product }: ProductCardProps) {
           </div>
         )}
         
-        {/* Badges Overlay */}
         <div className="absolute inset-0 z-20 pointer-events-none p-2 flex flex-col justify-between">
           <div className="flex justify-between items-start">
             <div className="flex flex-col gap-1">

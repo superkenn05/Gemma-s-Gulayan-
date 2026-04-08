@@ -1,11 +1,11 @@
+
 "use client";
 
 import { useSearchParams } from 'next/navigation';
 import { ProductDetailsClient } from '@/components/products/product-details-client';
 import { Suspense } from 'react';
-import { Header } from '@/components/layout/header';
-import { BottomNav } from '@/components/layout/bottom-nav';
 import { Loader2 } from 'lucide-react';
+import { BottomNav } from '@/components/layout/bottom-nav';
 
 function DetailsContent() {
   const searchParams = useSearchParams();
@@ -27,7 +27,7 @@ export default function ProductDetailsPage() {
   return (
     <div className="min-h-screen bg-white">
       <Suspense fallback={
-        <div className="min-h-screen flex items-center justify-center">
+        <div className="min-h-screen flex items-center justify-center bg-white">
           <Loader2 className="w-10 h-10 animate-spin text-primary" />
         </div>
       }>
