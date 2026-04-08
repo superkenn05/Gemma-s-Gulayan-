@@ -1,36 +1,40 @@
 import { redirect } from 'next/navigation';
+import { PRODUCTS } from '@/lib/mock-data';
 
 /**
- * This route satisfies the Next.js 15 static export requirement for dynamic segments.
- * All actual product details logic has been moved to /products/details?id=...
+ * Next.js 15 Static Export Configuration
+ * 
+ * In a static export (output: 'export'), dynamic segments like [id] 
+ * must be explicitly defined at build time. We provide the mock product IDs 
+ * to satisfy the build engine, then redirect users to the more flexible 
+ * query-parameter based details page.
  */
+export const dynamic = 'force-static';
 export const dynamicParams = false;
 
 /**
- * generateStaticParams is required for dynamic routes when using output: 'export'.
- * We provide a set of IDs from our mock data to satisfy the build process.
+ * Returns the list of product IDs to be pre-rendered.
+ * This satisfies the 'missing param' error during build/dev.
  */
 export function generateStaticParams() {
-  return [
-    { id: '1' },
-    { id: '2' },
-    { id: '3' },
-    { id: '4' },
-    { id: '5' }
-  ];
+  return PRODUCTS.map((product) => ({
+    id: product.id,
+  }));
 }
 
 interface PageProps {
   params: Promise<{ id: string }>;
 }
 
+/**
+ * Redirector Page
+ * Handles legacy or direct links to /products/[id] by sending them
+ * to the query-param based details page.
+ */
 export default async function ProductRedirectPage({ params }: PageProps) {
-  // In Next.js 15, dynamic route parameters are now Promises and must be awaited.
   const resolvedParams = await params;
   const id = resolvedParams.id;
   
-  // Server-side redirect to the query-parameter based details page.
-  // This allows the app to handle any ID (including new ones from Firestore)
-  // because the destination page (/products/details) is a static route.
+  // Use a relative redirect to the query-parameter based details page
   redirect(`/products/details?id=${id}`);
 }
