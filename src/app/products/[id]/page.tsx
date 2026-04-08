@@ -16,7 +16,7 @@ export const dynamic = 'force-static';
  */
 export function generateStaticParams() {
   return PRODUCTS.map((product) => ({
-    id: String(product.id),
+    id: product.id.toString(),
   }));
 }
 
@@ -24,13 +24,12 @@ export function generateStaticParams() {
  * Product Details Page (Server Component)
  * In Next.js 15, 'params' is a Promise that must be awaited.
  */
-export default async function ProductDetailsPage({
+export default async function Page({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const resolvedParams = await params;
-  const id = resolvedParams.id;
+  const { id } = await params;
   
   return <ProductDetailsClient id={id} />;
 }

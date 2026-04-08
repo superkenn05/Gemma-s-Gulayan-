@@ -1,3 +1,58 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "tomatoes",
+      "description": "Fresh Red Tomatoes",
+      "imageUrl": "https://picsum.photos/seed/fresh-tomato-harvest/600/400",
+      "imageHint": "fresh tomatoes"
+    },
+    {
+      "id": "mangoes",
+      "description": "Sweet Yellow Mangoes",
+      "imageUrl": "https://picsum.photos/seed/ripe-yellow-mango/600/400",
+      "imageHint": "ripe mango"
+    },
+    {
+      "id": "avocado",
+      "description": "Creamy Green Avocado",
+      "imageUrl": "https://picsum.photos/seed/organic-avocado/600/400",
+      "imageHint": "avocado fruit"
+    },
+    {
+      "id": "spinach",
+      "description": "Leafy Green Spinach",
+      "imageUrl": "https://picsum.photos/seed/green-spinach-leaves/600/400",
+      "imageHint": "fresh spinach"
+    },
+    {
+      "id": "carrots",
+      "description": "Crunchy Orange Carrots",
+      "imageUrl": "https://picsum.photos/seed/fresh-garden-carrots/600/400",
+      "imageHint": "fresh carrots"
+    },
+    {
+      "id": "apples",
+      "description": "Crisp Red Apples",
+      "imageUrl": "https://picsum.photos/seed/crisp-red-apple/600/400",
+      "imageHint": "red apples"
+    },
+    {
+      "id": "nuts",
+      "description": "Assorted Mix Nuts",
+      "imageUrl": "https://picsum.photos/seed/healthy-mixed-nuts/600/400",
+      "imageHint": "mixed nuts"
+    },
+    {
+      "id": "grains",
+      "description": "Healthy Grains",
+      "imageUrl": "https://picsum.photos/seed/whole-grain-mix/600/400",
+      "imageHint": "whole grains"
+    },
+    {
+      "id": "promo-banner",
+      "description": "Promotional Banner",
+      "imageUrl": "https://picsum.photos/seed/vegetable-market-display/1200/400",
+      "imageHint": "vegetable market"
+    }
+  ]
 }
