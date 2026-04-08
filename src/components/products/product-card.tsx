@@ -1,4 +1,3 @@
-
 "use client";
 
 import Image from 'next/image';
@@ -37,13 +36,16 @@ export function ProductCard({ product }: ProductCardProps) {
 
   const safePrice = Number(product.pricePerUnit) || 0;
   const displayPrice = safePrice.toFixed(2);
+  
+  // Use query parameter routing for better static export compatibility
+  const detailsUrl = `/products/details?id=${product.id}`;
 
   return (
     <div className={cn(
       "bg-white rounded-3xl p-3 shadow-md shadow-black/5 flex flex-col space-y-3 relative group h-full border border-transparent transition-all",
       isOutOfStock ? "opacity-75 grayscale-[0.5]" : "hover:border-primary/20"
     )}>
-      <Link href={`/products/${product.id}`} className="block relative aspect-square w-full overflow-hidden rounded-2xl bg-[#F8FBF8]">
+      <Link href={detailsUrl} className="block relative aspect-square w-full overflow-hidden rounded-2xl bg-[#F8FBF8]">
         {product.imageUrl ? (
           <Image 
             src={product.imageUrl} 
@@ -95,7 +97,7 @@ export function ProductCard({ product }: ProductCardProps) {
       </Link>
       
       <div className="flex flex-col flex-1 px-1">
-        <Link href={`/products/${product.id}`}>
+        <Link href={detailsUrl}>
           <h3 className="text-sm font-black text-foreground line-clamp-1 leading-tight mb-0.5">{product.name || 'Unnamed Product'}</h3>
         </Link>
         <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-tight mb-2">Per {product.unitOfMeasure || 'unit'}</p>

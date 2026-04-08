@@ -1,4 +1,3 @@
-
 import { Product, Category } from '@/types';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 
@@ -22,6 +21,8 @@ export const PRODUCTS: Product[] = [
     categoryId: 'vegetables',
     description: 'Fresh and juicy red tomatoes sourced directly from local farmers in Benguet.',
     nutritionalValues: { calories: '18kcal', protein: '0.9g', carbs: '3.9g', fat: '0.2g' },
+    currentStockQuantity: 50,
+    lowStockThreshold: 10,
     isPopular: true
   },
   {
@@ -35,6 +36,8 @@ export const PRODUCTS: Product[] = [
     categoryId: 'fruits',
     description: 'Sweet and aromatic yellow mangoes from Guimaras. The perfect summer treat.',
     nutritionalValues: { calories: '60kcal', protein: '0.8g', carbs: '15g', fat: '0.4g' },
+    currentStockQuantity: 30,
+    lowStockThreshold: 5,
     isPopular: true
   },
   {
@@ -48,6 +51,8 @@ export const PRODUCTS: Product[] = [
     categoryId: 'fruits',
     description: 'Rich and creamy avocados, great for salads or smoothies.',
     nutritionalValues: { calories: '160kcal', protein: '2g', carbs: '9g', fat: '15g' },
+    currentStockQuantity: 20,
+    lowStockThreshold: 5,
     isPopular: true
   },
   {
@@ -61,6 +66,8 @@ export const PRODUCTS: Product[] = [
     categoryId: 'vegetables',
     description: 'Organic spinach leaves, washed and ready to cook.',
     nutritionalValues: { calories: '23kcal', protein: '2.9g', carbs: '3.6g', fat: '0.4g' },
+    currentStockQuantity: 100,
+    lowStockThreshold: 20,
     isPopular: false
   },
   {
@@ -74,6 +81,8 @@ export const PRODUCTS: Product[] = [
     categoryId: 'vegetables',
     description: 'Sweet and crunchy carrots, packed with Vitamin A.',
     nutritionalValues: { calories: '41kcal', protein: '0.9g', carbs: '10g', fat: '0.2g' },
+    currentStockQuantity: 40,
+    lowStockThreshold: 10,
     isPopular: true
   }
 ];
