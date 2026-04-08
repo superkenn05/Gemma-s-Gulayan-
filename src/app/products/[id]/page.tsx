@@ -11,13 +11,11 @@ export const dynamicParams = false;
 /**
  * generateStaticParams maps our product IDs to the [id] dynamic segment.
  * Next.js uses this at build time to pre-render all static paths.
- * 
- * In Next.js 15 with Turbopack and static export, this function must return 
- * an array of objects where the keys match the dynamic segment names exactly.
  */
-export async function generateStaticParams() {
+export function generateStaticParams() {
+  // We return an array of objects where the key 'id' matches the [id] segment
   return PRODUCTS.map((product) => ({
-    id: product.id,
+    id: String(product.id),
   }));
 }
 
@@ -25,12 +23,11 @@ export async function generateStaticParams() {
  * The Product Page component. 
  * In Next.js 15, 'params' is a Promise that must be awaited before accessing its properties.
  */
-export default async function Page({
-  params,
-}: {
+export default async function Page(props: {
   params: Promise<{ id: string }>;
 }) {
-  const { id } = await params;
+  const params = await props.params;
+  const id = params.id;
   
   return <ProductDetailsClient id={id} />;
 }
