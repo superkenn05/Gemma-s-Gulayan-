@@ -10,6 +10,7 @@ import { usePriorityList } from '@/hooks/use-wishlist';
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
+import { ROUTES } from '@/lib/static-paths';
 
 interface ProductCardProps {
   product: Product;
@@ -37,9 +38,8 @@ export function ProductCard({ product }: ProductCardProps) {
   const safePrice = Number(product.pricePerUnit) || 0;
   const displayPrice = safePrice.toFixed(2);
   
-  // Use query parameters for details to support static export (output: 'export')
-  // This bypasses the need for generateStaticParams to know every Firestore ID at build time.
-  const detailsUrl = `/products/details?id=${product.id}`;
+  // Use centralized route helper
+  const detailsUrl = ROUTES.productDetails(product.id);
 
   return (
     <div className={cn(
