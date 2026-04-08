@@ -17,6 +17,7 @@ import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { formatDistanceToNow } from 'date-fns';
+import { PRODUCTS } from '@/lib/mock-data';
 import {
   Dialog,
   DialogContent,
@@ -25,6 +26,13 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
+
+// Enable static generation for product pages
+export async function generateStaticParams() {
+  return PRODUCTS.map((product) => ({
+    id: product.id,
+  }));
+}
 
 export default function ProductDetailsPage() {
   const { id } = useParams();
@@ -110,11 +118,9 @@ export default function ProductDetailsPage() {
     };
 
     try {
-      // 1. Save to Product Reviews Subcollection
       const reviewsCol = collection(db, 'products', id as string, 'reviews');
       await addDocumentNonBlocking(reviewsCol, reviewData);
 
-      // 2. Save to User Profile's Reviews for "My Reviews" page
       const userReviewsCol = collection(db, 'userProfiles', user.uid, 'productReviews');
       await addDocumentNonBlocking(userReviewsCol, {
         ...reviewData,
