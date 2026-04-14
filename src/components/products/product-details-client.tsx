@@ -157,7 +157,7 @@ export function ProductDetailsClient({ id }: { id: string }) {
   const previewReviews = reviews?.slice(0, 2) || [];
 
   return (
-    <div className="min-h-screen bg-white pb-32">
+    <div className="min-h-screen bg-white pb-40">
       <div className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between p-4 bg-transparent">
         <Button variant="secondary" size="icon" className="rounded-full bg-white/80 backdrop-blur" onClick={() => router.back()}>
           <ChevronLeft className="w-6 h-6" />
@@ -325,7 +325,7 @@ export function ProductDetailsClient({ id }: { id: string }) {
         )}
       </div>
 
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-white border-t flex space-x-3 items-center pb-safe shadow-2xl z-50">
+      <div className="fixed bottom-0 left-0 right-0 p-4 bg-white/95 backdrop-blur-md border-t flex space-x-3 items-center pb-safe shadow-2xl z-[100]">
         <Button variant="outline" size="icon" className="h-12 w-12 rounded-xl text-primary relative" onClick={() => router.push('/cart')}>
           <ShoppingCart className="w-5 h-5" />
           {totalItems > 0 && <span className="absolute -top-1 -right-1 bg-red-600 text-white text-[9px] font-black w-4 h-4 rounded-full flex items-center justify-center border-2 border-white">{totalItems}</span>}
