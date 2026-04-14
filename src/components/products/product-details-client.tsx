@@ -7,7 +7,7 @@ import { ChevronLeft, Star, Minus, Plus, Heart, Loader2, Send, MessageSquare, Sh
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/hooks/use-cart';
 import { usePriorityList } from '@/hooks/use-wishlist';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ProductCard } from '@/components/products/product-card';
 import { cn } from '@/lib/utils';
 import { useFirestore, useDoc, useMemoFirebase, useCollection, useUser, addDocumentNonBlocking } from '@/firebase';
@@ -63,16 +63,29 @@ export function ProductDetailsClient({ id }: { id: string }) {
 
   const { data: reviews } = useCollection<Review>(reviewsQuery);
 
+  // Ensure we get the category ID regardless of whether the field is named 'categoryId' or 'category'
+  // Detect which field name is being used for categories in the database
+  const categoryField = product?.categoryId ? 'categoryId' : (product as any)?.category ? 'category' : 'categoryId';
+  const activeCategoryId = product?.categoryId || (product as any)?.category;
+  
+  // Fallback for product name as logs showed it as undefined
+  const productName = product?.name || (product as any)?.productName || (product as any)?.title || 'Unnamed Harvest';
+
   const relatedQuery = useMemoFirebase(() => {
-    if (!db || !product?.categoryId) return null;
+    if (!db || !activeCategoryId) return null;
     return query(
       collection(db, 'products'), 
-      where('categoryId', '==', product.categoryId),
-      limit(5)
+      where(categoryField, '==', activeCategoryId)
     );
-  }, [db, product?.categoryId]);
+  }, [db, activeCategoryId, categoryField]);
 
   const { data: relatedProducts } = useCollection<Product>(relatedQuery);
+
+  useEffect(() => {
+    const currentId = product?.id || id;
+    const filtered = relatedProducts?.filter(p => p.id !== currentId) || [];
+    
+  }, [id, product, activeCategoryId, categoryField, relatedProducts, productName]);
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -115,7 +128,7 @@ export function ProductDetailsClient({ id }: { id: string }) {
       const userReviewsCol = collection(db, 'userProfiles', user.uid, 'productReviews');
       await addDocumentNonBlocking(userReviewsCol, {
         ...reviewData,
-        productName: product?.name || 'Unknown Product',
+        productName: productName,
         productImageUrl: product?.imageUrl || ''
       });
 
@@ -146,8 +159,11 @@ export function ProductDetailsClient({ id }: { id: string }) {
     );
   }
 
-  const isPriority = isInPriorityList(product.id);
-  const filteredRelated = relatedProducts?.filter(p => p.id !== product.id) || [];
+  // Standardize the product ID for filtering and wishlist logic
+  const currentId = product.id || id;
+  const isPriority = isInPriorityList(currentId);
+  
+  const filteredRelated = relatedProducts?.filter(p => p.id !== currentId) || [];
   const safePrice = Number(product.pricePerUnit) || 0;
   
   const stockCount = product.currentStockQuantity || 0;
@@ -166,14 +182,20 @@ export function ProductDetailsClient({ id }: { id: string }) {
           variant="secondary" 
           size="icon" 
           className={cn("rounded-full bg-white/80 backdrop-blur", isPriority ? "text-red-500" : "text-foreground")}
-          onClick={() => togglePriority(product.id)}
+          onClick={() => togglePriority(currentId)}
         >
           <Heart className={cn("w-5 h-5", isPriority && "fill-current")} />
         </Button>
       </div>
 
       <div className="relative w-full aspect-square bg-[#F8FBF8]">
-        <Image src={product.imageUrl} alt={product.name} fill className="object-cover" />
+        {product.imageUrl ? (
+          <Image src={product.imageUrl} alt={productName} fill className="object-cover" />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center">
+            <ShoppingCart className="w-12 h-12 text-muted-foreground/30" />
+          </div>
+        )}
         {isOutOfStock && (
           <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
             <Badge variant="destructive" className="px-6 py-2 text-lg font-black uppercase tracking-widest">Out of Stock</Badge>
@@ -184,7 +206,7 @@ export function ProductDetailsClient({ id }: { id: string }) {
       <div className="px-6 py-6 -mt-10 rounded-t-[40px] bg-white relative z-10 shadow-2xl">
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center space-x-2">
-            <Badge className="bg-primary/10 text-primary uppercase font-black text-[10px]">{product.categoryId}</Badge>
+            <Badge className="bg-primary/10 text-primary uppercase font-black text-[10px]">{activeCategoryId}</Badge>
             {isLowStock && <Badge className="bg-orange-500 text-white font-black text-[10px] animate-pulse">Low Stock</Badge>}
           </div>
           <div className="flex items-center space-x-1">
@@ -193,7 +215,7 @@ export function ProductDetailsClient({ id }: { id: string }) {
           </div>
         </div>
 
-        <h1 className="text-3xl font-black font-headline mb-4">{product.name}</h1>
+        <h1 className="text-3xl font-black font-headline mb-4">{productName}</h1>
         
         <div className="flex items-center justify-between mb-8">
           <div>
@@ -313,7 +335,7 @@ export function ProductDetailsClient({ id }: { id: string }) {
           </div>
         </div>
 
-        {filteredRelated.length > 0 && (
+      {filteredRelated.length > 0 ? (
           <div className="mt-10">
             <h3 className="text-lg font-black font-headline mb-4">Related Harvest</h3>
             <div className="flex space-x-4 overflow-x-auto pb-4 scrollbar-hide">
@@ -321,6 +343,13 @@ export function ProductDetailsClient({ id }: { id: string }) {
                 <div key={p.id} className="min-w-[160px]"><ProductCard product={p} /></div>
               ))}
             </div>
+          </div>
+        ) : (
+          <div className="mt-10 p-6 bg-muted/20 rounded-3xl border border-dashed text-center">
+            <p className="text-sm text-muted-foreground font-bold italic">
+              No other items in {activeCategoryId} yet. 
+              Check back soon for more fresh harvest!
+            </p>
           </div>
         )}
       </div>
