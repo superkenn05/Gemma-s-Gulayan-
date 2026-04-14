@@ -43,7 +43,7 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
       </head>
-      <body className="font-body antialiased bg-background overflow-x-hidden">
+      <body className="font-body antialiased bg-background overflow-x-hidden" suppressHydrationWarning>
         <FirebaseClientProvider>
           <AuthGuard>
             <CartProvider>
